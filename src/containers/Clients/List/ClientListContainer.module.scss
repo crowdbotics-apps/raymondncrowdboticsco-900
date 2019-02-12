@@ -1,3 +1,5 @@
+@import "theme/colors.scss";
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -16,11 +18,11 @@
       font-size: 16px;
       padding: 0px 20px;
       border-radius: 20px;
-      border: 1px solid #555;
+      border: 1px solid $grey;
 
       &:focus {
         outline: none;
-        border: 1px solid #03a9f4;
+        border: 1px solid $primary;
       }
     }
 
@@ -32,9 +34,9 @@
       line-height: 40px;
       font-weight: 600;
       text-align: center;
-      color: #03a9f4;
+      color: $primary;
       align-items: center;
-      border: 1px solid #03a9f4;
+      border: 1px solid $primary;
       cursor: pointer;
 
       .icon {
@@ -45,8 +47,8 @@
         outline: none;
       }
       &:active {
-        background-color: #03a9f4;
-        color: #fff;
+        background-color: $primary;
+        color: $white;
       }
     }
   }
@@ -56,13 +58,13 @@
   }
 
   .header {
-    background: #03a9f4;
+    background: $primary;
   }
 
   th {
     height: 40px;
     padding: 10px 10px;
-    color: #fff;
+    color: $white;
   }
 
   td {
@@ -71,14 +73,22 @@
   table,
   th,
   td {
-    border: 1px solid #ddd;
+    border: 1px solid $light-grey;
     text-align: center;
   }
 
   .iconPencil {
     margin-right: 5px;
+
+    &:active {
+      opacity: 0.5;
+    }
   }
   .iconTrash {
     margin-left: 5px;
+    color: $danger;
+    &:active {
+      opacity: 0.5;
+    }
   }
 }

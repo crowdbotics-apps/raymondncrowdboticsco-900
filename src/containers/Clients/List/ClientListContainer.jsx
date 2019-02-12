@@ -76,26 +76,30 @@ class ClientListContainer extends React.Component {
           </div>
         </div>
         <table>
-          <tr className={styles.header}>
-            {this.columns.map(item => (
-              <th key={item}>{item}</th>
-            ))}
-          </tr>
-          {this.state.data.map((item, index) => (
-            <tr key={`${index}`}>
-              <td>{`${index + 1}`}</td>
-              <td>{item.org}</td>
-              <td>{item.status}</td>
-              <td>{item.employees}</td>
-              <td>{item.employee_groups}</td>
-              <td>{item.divisions}</td>
-              <td>{item.active_campaigns}</td>
-              <td>
-                <i className={`fa fa-pencil-square-o ${styles.iconPencil}`} />
-                <i className={`fa fa-trash-o ${styles.iconTrash}`} />
-              </td>
+          <thead>
+            <tr className={styles.header}>
+              {this.columns.map(item => (
+                <th key={item}>{item}</th>
+              ))}
             </tr>
-          ))}
+          </thead>
+          <tbody>
+            {this.state.data.map((item, index) => (
+              <tr key={`${index}`}>
+                <td>{`${index + 1}`}</td>
+                <td>{item.org}</td>
+                <td>{item.status}</td>
+                <td>{item.employees}</td>
+                <td>{item.employee_groups}</td>
+                <td>{item.divisions}</td>
+                <td>{item.active_campaigns}</td>
+                <td>
+                  <i className={`fa fa-pencil-square-o ${styles.iconPencil}`} />
+                  <i className={`fa fa-trash-o ${styles.iconTrash}`} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     );

@@ -1,10 +1,12 @@
+@import "theme/colors.scss";
+
 .wrapper {
   display: flex;
   flex-direction: column;
   padding: 20px;
 
   .container {
-    border: 1px solid #ddd;
+    border: 1px solid $light-grey;
     padding: 20px;
     margin-bottom: 50px;
 
@@ -17,15 +19,25 @@
       align-items: center;
       justify-content: space-between;
 
-      .btnAddMore {
-        font-size: 18px;
-        text-decoration: underline;
-        font-weight: 600;
-        cursor: pointer;
+      .iconRemove {
+        font-size: 32px;
+        color: $danger;
 
         &:active {
           opacity: 0.5;
         }
+      }
+    }
+
+    .btnAddMore {
+      font-size: 18px;
+      text-decoration: underline;
+      font-weight: 600;
+      color: $primary;
+      cursor: pointer;
+
+      &:active {
+        opacity: 0.5;
       }
     }
   }
@@ -58,9 +70,9 @@
       line-height: 40px;
       font-weight: 600;
       text-align: center;
-      color: #555;
+      color: $grey;
       align-items: center;
-      border: 1px solid #555;
+      border: 1px solid $grey;
       cursor: pointer;
 
       .icon {
@@ -68,8 +80,8 @@
       }
 
       &:active {
-        background-color: #555;
-        color: #fff;
+        background-color: $grey;
+        color: $white;
       }
     }
   }
@@ -89,15 +101,15 @@
       line-height: 40px;
       font-weight: 600;
       text-align: center;
-      color: #03a9f4;
+      color: $primary;
       align-items: center;
-      border: 1px solid #03a9f4;
+      border: 1px solid $primary;
       cursor: pointer;
       margin-right: 50px;
 
       &:active {
-        background-color: #03a9f4;
-        color: #fff;
+        background-color: $primary;
+        color: $white;
       }
     }
 
@@ -109,20 +121,21 @@
       line-height: 40px;
       font-weight: 600;
       text-align: center;
-      color: #b71c1c;
+      color: $danger;
       align-items: center;
-      border: 1px solid #b71c1c;
+      border: 1px solid $danger;
       cursor: pointer;
 
       &:active {
-        background-color: #b71c1c;
-        color: #fff;
+        background-color: $danger;
+        color: $white;
       }
     }
   }
 
   table {
     border-collapse: collapse;
+    margin-bottom: 10px;
   }
 
   th {
@@ -136,7 +149,7 @@
   table,
   th,
   td {
-    border: 1px solid #ddd;
+    border: 1px solid $light-grey;
     text-align: center;
   }
 }
