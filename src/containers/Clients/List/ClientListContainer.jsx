@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styles from './ClientListContainer.module.scss';
 
@@ -89,7 +90,10 @@ class ClientListContainer extends React.Component {
               <td>{item.employee_groups}</td>
               <td>{item.divisions}</td>
               <td>{item.active_campaigns}</td>
-              <td>actions</td>
+              <td>
+                <i className={`fa fa-pencil-square-o ${styles.iconPencil}`} />
+                <i className={`fa fa-trash-o ${styles.iconTrash}`} />
+              </td>
             </tr>
           ))}
         </table>
@@ -97,5 +101,9 @@ class ClientListContainer extends React.Component {
     );
   }
 }
+
+ClientListContainer.propTypes = {
+  history: PropTypes.object
+};
 
 export default ClientListContainer;

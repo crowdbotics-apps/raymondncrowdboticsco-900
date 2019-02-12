@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import { Link, Switch, Route } from 'react-router-dom';
+import { Link, Switch, Route, Redirect } from 'react-router-dom';
 
 import ClientListContainer from 'containers/Clients/List';
 import ClientAddContainer from 'containers/Clients/Add';
@@ -54,6 +54,7 @@ class Router extends React.Component {
             <Switch>
               <Route path='/clients/add' component={ClientAddContainer} />
               <Route path='/clients' component={ClientListContainer} />
+              <Redirect to='/clients' />
             </Switch>
           </div>
         </div>
