@@ -108,7 +108,7 @@ class ClientListContainer extends React.Component {
             />
             <input
               type='text'
-              placeholder='Type organization keyword here and press enter to get the result...'
+              placeholder='Type organization name here and press enter to get the result...'
               value={this.state.keyword}
               onChange={this.searchInputChanged}
               onKeyPress={this.searchInputKeyPressed}
