@@ -5,13 +5,14 @@ import uuid from 'uuid/v4';
 
 import { ClientController } from 'controllers';
 
-import styles from './ClientAddContainer.module.scss';
+import styles from './ClientEditContainer.module.scss';
 
-class ClientAddContainer extends React.Component {
+class ClientEditContainer extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      clientId: props.match.params.id,
       basic: {
         org: '',
         contact: ''
@@ -22,20 +23,41 @@ class ClientAddContainer extends React.Component {
     this.fileInputs = {};
   }
 
+  async componentDidMount() {
+    let data = await ClientController.getClientById(this.state.clientId);
+    let groups = data.employee_groups.map(group => {
+      let item = { ...group };
+      item.employee_list = group.employee_list.map(employee => [
+        employee.name,
+        employee.email
+      ]);
+      return item;
+    });
+    this.setState({
+      basic: {
+        org: data.org,
+        contact: data.contact,
+        status: data.status
+      },
+      groups
+    });
+  }
+
   generateNewGroup = () => {
     return {
       id: uuid(),
       name: '',
       division: '',
       number_of_employees: 0,
-      employee_list: []
+      employee_list: [],
+      newlyAdded: true
     };
   };
 
-  addClicked = async () => {
+  updateClicked = async () => {
     try {
-      await ClientController.addClient(this.state);
-      alert('A new client is added.');
+      await ClientController.updateClient(this.state);
+      alert('This client is updated.');
       this.props.history.goBack();
     } catch (error) {
       alert(error.message);
@@ -100,7 +122,7 @@ class ClientAddContainer extends React.Component {
   render() {
     return (
       <div className={styles.wrapper}>
-        <h1> Add a new client </h1>
+        <h1> Edit client </h1>
         <div className={styles.container}>
           <h2>Basic Info</h2>
           <div className={styles.inputItem}>
@@ -188,8 +210,8 @@ class ClientAddContainer extends React.Component {
           </div>
         ))}
         <div className={styles.btnGroup}>
-          <div className={styles.btnSave} onClick={this.addClicked}>
-            Add
+          <div className={styles.btnSave} onClick={this.updateClicked}>
+            Update
           </div>
           <div className={styles.btnCancel} onClick={this.cancelClicked}>
             Cancel
@@ -200,8 +222,9 @@ class ClientAddContainer extends React.Component {
   }
 }
 
-ClientAddContainer.propTypes = {
-  history: PropTypes.object
+ClientEditContainer.propTypes = {
+  history: PropTypes.object,
+  match: PropTypes.object
 };
 
-export default ClientAddContainer;
+export default ClientEditContainer;

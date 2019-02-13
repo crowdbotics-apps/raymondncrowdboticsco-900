@@ -4,6 +4,9 @@ import { Link, Switch, Route, Redirect } from 'react-router-dom';
 
 import ClientListContainer from 'containers/Clients/List';
 import ClientAddContainer from 'containers/Clients/Add';
+import ClientEditContainer from 'containers/Clients/Edit';
+import CampaignListContainer from 'containers/Campaigns/List';
+import ReportContainer from 'containers/Report';
 
 import styles from './Router.module.scss';
 
@@ -41,7 +44,7 @@ class Router extends React.Component {
               Campaigns
             </Link>
             <Link
-              to='/reporting'
+              to='/report'
               className={cn(
                 styles.menuitem,
                 selectedMenuItem === 2 && styles['menuitem-selected']
@@ -53,7 +56,10 @@ class Router extends React.Component {
           <div className={styles.content}>
             <Switch>
               <Route path='/clients/add' component={ClientAddContainer} />
+              <Route path='/clients/edit/:id' component={ClientEditContainer} />
               <Route path='/clients' component={ClientListContainer} />
+              <Route path='/campaigns' component={CampaignListContainer} />
+              <Route path='/report' component={ReportContainer} />
               <Redirect to='/clients' />
             </Switch>
           </div>

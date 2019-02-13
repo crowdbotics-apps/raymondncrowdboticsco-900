@@ -91,4 +91,12 @@
       opacity: 0.5;
     }
   }
+
+  .iconRefresh {
+    margin-left: 5px;
+    color: $primary;
+    &:active {
+      opacity: 0.5;
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { ClientController } from 'controllers';
 import styles from './ClientListContainer.module.scss';
 
 class ClientListContainer extends React.Component {
@@ -23,46 +24,50 @@ class ClientListContainer extends React.Component {
     };
   }
 
-  componentDidMount() {
-    let data = [
-      {
-        org: 'test',
-        status: 'active',
-        employees: 20,
-        employee_groups: 4,
-        divisions: 5,
-        active_campaigns: 7
-      },
-      {
-        org: 'test',
-        status: 'active',
-        employees: 20,
-        employee_groups: 4,
-        divisions: 5,
-        active_campaigns: 7
-      },
-      {
-        org: 'test',
-        status: 'active',
-        employees: 20,
-        employee_groups: 4,
-        divisions: 5,
-        active_campaigns: 7
-      },
-      {
-        org: 'test',
-        status: 'active',
-        employees: 20,
-        employee_groups: 4,
-        divisions: 5,
-        active_campaigns: 7
-      }
-    ];
-    this.setState({ data });
+  async componentDidMount() {
+    await this.reload();
   }
+
+  reload = async () => {
+    let data = await ClientController.getClients();
+    data = data.map(client => {
+      let item = { ...client };
+      let emailSet = new Set();
+      client.employee_groups.map(group => {
+        for (let employee of group.employee_list) {
+          emailSet.add(employee.email);
+        }
+      });
+      item.employees = Array.from(emailSet);
+      return item;
+    });
+    this.setState({
+      data
+    });
+  };
 
   addClicked = () => {
     this.props.history.push('/clients/add');
+  };
+
+  editClicked = clientId => () => {
+    this.props.history.push(`/clients/edit/${clientId}`);
+  };
+
+  deactivateClicked = clientId => async () => {
+    var res = window.confirm('Do you want to deactivate this client?');
+    if (res) {
+      await ClientController.deactivateClient(clientId);
+      await this.reload();
+    }
+  };
+
+  activateClicked = clientId => async () => {
+    var res = window.confirm('Do you want to activate this client?');
+    if (res) {
+      await ClientController.activateClient(clientId);
+      await this.reload();
+    }
   };
 
   render() {
@@ -85,17 +90,29 @@ class ClientListContainer extends React.Component {
           </thead>
           <tbody>
             {this.state.data.map((item, index) => (
-              <tr key={`${index}`}>
+              <tr key={item.id}>
                 <td>{`${index + 1}`}</td>
                 <td>{item.org}</td>
                 <td>{item.status}</td>
-                <td>{item.employees}</td>
-                <td>{item.employee_groups}</td>
-                <td>{item.divisions}</td>
-                <td>{item.active_campaigns}</td>
+                <td>{item.employees.length}</td>
+                <td>{item.employee_group_ids.length}</td>
+                <td>{item.employee_group_ids.length}</td>
+                <td>N/A</td>
                 <td>
-                  <i className={`fa fa-pencil-square-o ${styles.iconPencil}`} />
-                  <i className={`fa fa-trash-o ${styles.iconTrash}`} />
+                  <span onClick={this.editClicked(item.id)}>
+                    <i
+                      className={`fa fa-pencil-square-o ${styles.iconPencil}`}
+                    />
+                  </span>
+                  {item.status === 'active' ? (
+                    <span onClick={this.deactivateClicked(item.id)}>
+                      <i className={`fa fa-trash-o ${styles.iconTrash}`} />
+                    </span>
+                  ) : (
+                    <span onClick={this.activateClicked(item.id)}>
+                      <i className={`fa fa-refresh ${styles.iconRefresh}`} />
+                    </span>
+                  )}
                 </td>
               </tr>
             ))}
