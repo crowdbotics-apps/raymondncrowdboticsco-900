@@ -7,6 +7,7 @@ import ClientAddContainer from 'containers/Clients/Add';
 import ClientEditContainer from 'containers/Clients/Edit';
 import CampaignListContainer from 'containers/Campaigns/List';
 import ReportContainer from 'containers/Report';
+import ParticipantListContainer from 'containers/Participants/List';
 
 import styles from './Router.module.scss';
 
@@ -17,8 +18,12 @@ class Router extends React.Component {
       selectedMenuItem = 0;
     } else if (window.location.pathname.startsWith('/campaigns')) {
       selectedMenuItem = 1;
-    } else {
+    } else if (window.location.pathname.startsWith('/report')) {
       selectedMenuItem = 2;
+    } else if (window.location.pathname.startsWith('/participants')) {
+      selectedMenuItem = 3;
+    } else {
+      selectedMenuItem = 0; // default
     }
     return (
       <div className={styles.wrapper}>
@@ -52,6 +57,15 @@ class Router extends React.Component {
             >
               Reporting
             </Link>
+            <Link
+              to='/participants'
+              className={cn(
+                styles.menuitem,
+                selectedMenuItem === 3 && styles['menuitem-selected']
+              )}
+            >
+              Participants
+            </Link>
           </div>
           <div className={styles.content}>
             <Switch>
@@ -60,6 +74,10 @@ class Router extends React.Component {
               <Route path='/clients' component={ClientListContainer} />
               <Route path='/campaigns' component={CampaignListContainer} />
               <Route path='/report' component={ReportContainer} />
+              <Route
+                path='/participants'
+                component={ParticipantListContainer}
+              />
               <Redirect to='/clients' />
             </Switch>
           </div>

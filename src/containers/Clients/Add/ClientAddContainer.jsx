@@ -121,7 +121,7 @@ class ClientAddContainer extends React.Component {
         {this.state.groups.map((group, index) => (
           <div key={group.id} className={styles.container}>
             <div className={styles.title}>
-              <h2>Employee Group</h2>
+              <h2>Participant Group</h2>
               {this.state.groups.length > 1 && (
                 <span onClick={this.groupRemove(index)}>
                   <i className={`fa fa-times-circle-o ${styles.iconRemove}`} />
@@ -129,25 +129,25 @@ class ClientAddContainer extends React.Component {
               )}
             </div>
             <div className={styles.inputItem}>
-              <span>Employee Group Name</span>
+              <span>Participant Group Name</span>
               <input
                 value={group.name}
                 onChange={this.groupChange('name', index)}
               />
             </div>
             <div className={styles.inputItem}>
-              <span>Division</span>
+              <span>Division / Location</span>
               <input
                 value={group.division}
                 onChange={this.groupChange('division', index)}
               />
             </div>
             <div className={styles.inputItem}>
-              <span>Number of Employees</span>
+              <span>Number of Participants</span>
               <input disabled value={group.number_of_employees} />
             </div>
             <div className={styles.inputItem}>
-              <span>Employee List</span>
+              <span>Participant List</span>
               <div
                 className={styles.btnUpload}
                 onClick={this.uploadClicked(group.id)}
@@ -182,7 +182,7 @@ class ClientAddContainer extends React.Component {
             )}
             {index === this.state.groups.length - 1 && (
               <div className={styles.btnAddMore} onClick={this.addmoreClicked}>
-                Add More Employee Group
+                Add More Participant Group
               </div>
             )}
           </div>

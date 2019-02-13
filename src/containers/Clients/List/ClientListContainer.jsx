@@ -12,9 +12,9 @@ class ClientListContainer extends React.Component {
       'No',
       'Organization',
       'Status',
-      'Employees',
-      'Employee groups',
-      'Divisions',
+      'Participants',
+      'Participants groups',
+      'Divisions / Locations',
       'Active Campaigns',
       'Actions'
     ];
@@ -74,7 +74,7 @@ class ClientListContainer extends React.Component {
     return (
       <div className={styles.wrapper}>
         <div className={styles.top}>
-          <input type='text' placeholder='Search..' />
+          <input type='text' placeholder='Search Organization...' />
           <div onClick={this.addClicked}>
             <i className={`fa fa-plus ${styles.icon}`} />
             Add
