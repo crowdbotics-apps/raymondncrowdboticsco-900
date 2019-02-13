@@ -132,7 +132,8 @@ export const getClientById = clientId =>
     });
   });
 
-export const getClients = async () => {
+// search clients with the criteria
+export const getClients = async payload => {
   let clientCollection = Firestore.collection('clients');
 
   try {

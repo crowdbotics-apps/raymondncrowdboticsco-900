@@ -13,14 +13,15 @@ class ClientListContainer extends React.Component {
       'Organization',
       'Status',
       'Participants',
-      'Participants groups',
+      'Participant groups',
       'Divisions / Locations',
       'Active Campaigns',
       'Actions'
     ];
 
     this.state = {
-      data: []
+      data: [],
+      keyword: ''
     };
   }
 
@@ -30,17 +31,22 @@ class ClientListContainer extends React.Component {
 
   reload = async () => {
     let data = await ClientController.getClients();
-    data = data.map(client => {
-      let item = { ...client };
-      let emailSet = new Set();
-      client.employee_groups.map(group => {
-        for (let employee of group.employee_list) {
-          emailSet.add(employee.email);
-        }
+
+    data = data
+      .filter(client =>
+        client.org.toLowerCase().includes(this.state.keyword.toLowerCase())
+      )
+      .map(client => {
+        let item = { ...client };
+        let emailSet = new Set();
+        client.employee_groups.map(group => {
+          for (let employee of group.employee_list) {
+            emailSet.add(employee.email);
+          }
+        });
+        item.employees = Array.from(emailSet);
+        return item;
       });
-      item.employees = Array.from(emailSet);
-      return item;
-    });
     this.setState({
       data
     });
@@ -70,54 +76,91 @@ class ClientListContainer extends React.Component {
     }
   };
 
+  searchInputChanged = e => {
+    this.setState(
+      {
+        keyword: e.target.value
+      },
+      async () => {
+        if (!this.state.keyword) {
+          await this.reload();
+        }
+      }
+    );
+  };
+
+  searchInputKeyPressed = async e => {
+    if (e.charCode === 13) {
+      // enter pressed
+      await this.reload();
+    }
+  };
+
   render() {
     return (
       <div className={styles.wrapper}>
         <div className={styles.top}>
-          <input type='text' placeholder='Search Organization...' />
+          <div className={styles.searchbar}>
+            <i
+              className={`fa fa-search ${styles.iconSearch}`}
+              value={this.state.keyword}
+              onChange={this.search}
+            />
+            <input
+              type='text'
+              placeholder='Type organization keyword here and press enter to get the result...'
+              value={this.state.keyword}
+              onChange={this.searchInputChanged}
+              onKeyPress={this.searchInputKeyPressed}
+            />
+          </div>
           <div onClick={this.addClicked}>
             <i className={`fa fa-plus ${styles.icon}`} />
             Add
           </div>
         </div>
-        <table>
-          <thead>
-            <tr className={styles.header}>
-              {this.columns.map(item => (
-                <th key={item}>{item}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.data.map((item, index) => (
-              <tr key={item.id}>
-                <td>{`${index + 1}`}</td>
-                <td>{item.org}</td>
-                <td>{item.status}</td>
-                <td>{item.employees.length}</td>
-                <td>{item.employee_group_ids.length}</td>
-                <td>{item.employee_group_ids.length}</td>
-                <td>N/A</td>
-                <td>
-                  <span onClick={this.editClicked(item.id)}>
-                    <i
-                      className={`fa fa-pencil-square-o ${styles.iconPencil}`}
-                    />
-                  </span>
-                  {item.status === 'active' ? (
-                    <span onClick={this.deactivateClicked(item.id)}>
-                      <i className={`fa fa-trash-o ${styles.iconTrash}`} />
-                    </span>
-                  ) : (
-                    <span onClick={this.activateClicked(item.id)}>
-                      <i className={`fa fa-refresh ${styles.iconRefresh}`} />
-                    </span>
-                  )}
-                </td>
+        {this.state.data.length ? (
+          <table>
+            <thead>
+              <tr className={styles.header}>
+                {this.columns.map(item => (
+                  <th key={item}>{item}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {this.state.data.map((item, index) => (
+                <tr key={item.id}>
+                  <td>{`${index + 1}`}</td>
+                  <td>{item.org}</td>
+                  <td>{item.status}</td>
+                  <td>{item.employees.length}</td>
+                  <td>{item.employee_group_ids.length}</td>
+                  <td>{item.employee_group_ids.length}</td>
+                  <td>N/A</td>
+                  <td>
+                    <span onClick={this.editClicked(item.id)}>
+                      <i
+                        className={`fa fa-pencil-square-o ${styles.iconPencil}`}
+                      />
+                    </span>
+                    {item.status === 'active' ? (
+                      <span onClick={this.deactivateClicked(item.id)}>
+                        <i className={`fa fa-trash-o ${styles.iconTrash}`} />
+                      </span>
+                    ) : (
+                      <span onClick={this.activateClicked(item.id)}>
+                        <i className={`fa fa-refresh ${styles.iconRefresh}`} />
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <h3>No Search Result</h3>
+        )}
       </div>
     );
   }
