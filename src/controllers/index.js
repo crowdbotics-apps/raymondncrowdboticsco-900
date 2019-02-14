@@ -1,3 +1,4 @@
 import * as ClientController from './Client';
+import * as ParticipantsController from './Participants';
 
-export { ClientController };
+export { ClientController, ParticipantsController };
