@@ -4,11 +4,11 @@ export const addClient = async payload => {
   try {
     let groupIds = [];
     let tasks = payload.groups.map(group => {
-      let groupDoc = Firestore.collection('employee_groups').doc();
-      let employee_list = group.employee_list.map(employee => {
+      let groupDoc = Firestore.collection('participant_groups').doc();
+      let participant_list = group.participant_list.map(participant => {
         return {
-          name: employee[0],
-          email: employee[1]
+          name: participant[0],
+          email: participant[1]
         };
       });
       groupIds.push(groupDoc.id);
@@ -16,8 +16,8 @@ export const addClient = async payload => {
         id: groupDoc.id,
         name: group.name,
         division: group.division,
-        number_of_employees: group.number_of_employees,
-        employee_list
+        number_of_participants: group.number_of_participants,
+        participant_list
       });
     });
     await Promise.all(tasks);
@@ -28,7 +28,7 @@ export const addClient = async payload => {
       org: payload.basic.org,
       contact: payload.basic.contact,
       status: 'active',
-      employee_group_ids: groupIds
+      participant_group_ids: groupIds
     });
   } catch (error) {
     throw error;
@@ -42,15 +42,15 @@ export const updateClient = async payload => {
       let groupDoc;
       if (group.newlyAdded) {
         //newly added
-        groupDoc = Firestore.collection('employee_groups').doc();
+        groupDoc = Firestore.collection('participant_groups').doc();
       } else {
-        groupDoc = Firestore.collection('employee_groups').doc(group.id);
+        groupDoc = Firestore.collection('participant_groups').doc(group.id);
       }
 
-      let employee_list = group.employee_list.map(employee => {
+      let participant_list = group.participant_list.map(participant => {
         return {
-          name: employee[0],
-          email: employee[1]
+          name: participant[0],
+          email: participant[1]
         };
       });
       groupIds.push(groupDoc.id);
@@ -59,16 +59,16 @@ export const updateClient = async payload => {
           id: groupDoc.id,
           name: group.name,
           division: group.division,
-          number_of_employees: group.number_of_employees,
-          employee_list
+          number_of_participants: group.number_of_participants,
+          participant_list
         });
       } else {
         return groupDoc.update({
           id: groupDoc.id,
           name: group.name,
           division: group.division,
-          number_of_employees: group.number_of_employees,
-          employee_list
+          number_of_participants: group.number_of_participants,
+          participant_list
         });
       }
     });
@@ -80,7 +80,7 @@ export const updateClient = async payload => {
       org: payload.basic.org,
       contact: payload.basic.contact,
       status: payload.basic.status,
-      employee_group_ids: groupIds
+      participant_group_ids: groupIds
     });
   } catch (error) {
     throw error;
@@ -115,19 +115,19 @@ export const getClientById = clientId =>
     clientDoc.onSnapshot(async snapshot => {
       let clientData = snapshot.data();
 
-      let tasks = clientData.employee_group_ids.map(
+      let tasks = clientData.participant_group_ids.map(
         groupId =>
           new Promise((resolve, reject) => {
-            let employee_group_doc = Firestore.collection(
-              'employee_groups'
+            let participant_group_doc = Firestore.collection(
+              'participant_groups'
             ).doc(groupId);
-            employee_group_doc.onSnapshot(group_snapshot => {
-              let employee_group_data = group_snapshot.data();
-              resolve(employee_group_data);
+            participant_group_doc.onSnapshot(group_snapshot => {
+              let participant_group_data = group_snapshot.data();
+              resolve(participant_group_data);
             });
           })
       );
-      clientData.employee_groups = await Promise.all(tasks);
+      clientData.participant_groups = await Promise.all(tasks);
       resolve(clientData);
     });
   });

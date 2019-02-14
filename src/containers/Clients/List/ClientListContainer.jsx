@@ -39,12 +39,12 @@ class ClientListContainer extends React.Component {
       .map(client => {
         let item = { ...client };
         let emailSet = new Set();
-        client.employee_groups.map(group => {
-          for (let employee of group.employee_list) {
-            emailSet.add(employee.email);
+        client.participant_groups.map(group => {
+          for (let participant of group.participant_list) {
+            emailSet.add(participant.email);
           }
         });
-        item.employees = Array.from(emailSet);
+        item.participants = Array.from(emailSet);
         return item;
       });
     this.setState({
@@ -101,11 +101,7 @@ class ClientListContainer extends React.Component {
       <div className={styles.wrapper}>
         <div className={styles.top}>
           <div className={styles.searchbar}>
-            <i
-              className={`fa fa-search ${styles.iconSearch}`}
-              value={this.state.keyword}
-              onChange={this.search}
-            />
+            <i className={`fa fa-search ${styles.iconSearch}`} />
             <input
               type='text'
               placeholder='Type organization name here and press enter to get the result...'
@@ -134,9 +130,9 @@ class ClientListContainer extends React.Component {
                   <td>{`${index + 1}`}</td>
                   <td>{item.org}</td>
                   <td>{item.status}</td>
-                  <td>{item.employees.length}</td>
-                  <td>{item.employee_group_ids.length}</td>
-                  <td>{item.employee_group_ids.length}</td>
+                  <td>{item.participants.length}</td>
+                  <td>{item.participant_group_ids.length}</td>
+                  <td>{item.participant_group_ids.length}</td>
                   <td>N/A</td>
                   <td>
                     <span onClick={this.editClicked(item.id)}>

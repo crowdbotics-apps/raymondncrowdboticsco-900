@@ -25,11 +25,11 @@ class ClientEditContainer extends React.Component {
 
   async componentDidMount() {
     let data = await ClientController.getClientById(this.state.clientId);
-    let groups = data.employee_groups.map(group => {
+    let groups = data.participant_groups.map(group => {
       let item = { ...group };
-      item.employee_list = group.employee_list.map(employee => [
-        employee.name,
-        employee.email
+      item.participant_list = group.participant_list.map(participant => [
+        participant.name,
+        participant.email
       ]);
       return item;
     });
@@ -48,8 +48,8 @@ class ClientEditContainer extends React.Component {
       id: uuid(),
       name: '',
       division: '',
-      number_of_employees: 0,
-      employee_list: [],
+      number_of_participants: 0,
+      participant_list: [],
       newlyAdded: true
     };
   };
@@ -72,8 +72,8 @@ class ClientEditContainer extends React.Component {
     let { groups } = this.state;
 
     let last = groups[groups.length - 1];
-    if (!last.name || !last.division || !last.number_of_employees) {
-      alert('Please complete the current employee group to add more.');
+    if (!last.name || !last.division || !last.number_of_participants) {
+      alert('Please complete the current participant group to add more.');
       return;
     }
     groups.push(this.generateNewGroup());
@@ -93,8 +93,8 @@ class ClientEditContainer extends React.Component {
         },
         complete: results => {
           let { groups } = this.state;
-          groups[index]['employee_list'] = results.data;
-          groups[index]['number_of_employees'] = results.data.length;
+          groups[index]['participant_list'] = results.data;
+          groups[index]['number_of_participants'] = results.data.length;
           this.setState({ groups });
         }
       });
@@ -166,7 +166,7 @@ class ClientEditContainer extends React.Component {
             </div>
             <div className={styles.inputItem}>
               <span>Number of Participants</span>
-              <input disabled value={group.number_of_employees} />
+              <input disabled value={group.number_of_participants} />
             </div>
             <div className={styles.inputItem}>
               <span>Participant List</span>
@@ -184,7 +184,7 @@ class ClientEditContainer extends React.Component {
                 onChange={this.fileUploadChange(index)}
               />
             </div>
-            {group.employee_list.length > 0 && (
+            {group.participant_list.length > 0 && (
               <table>
                 <thead>
                   <tr>
@@ -193,10 +193,10 @@ class ClientEditContainer extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {group.employee_list.map((employee, index) => (
+                  {group.participant_list.map((participant, index) => (
                     <tr key={`${index}`}>
-                      <td>{employee[0]}</td>
-                      <td>{employee[1]}</td>
+                      <td>{participant[0]}</td>
+                      <td>{participant[1]}</td>
                     </tr>
                   ))}
                 </tbody>
