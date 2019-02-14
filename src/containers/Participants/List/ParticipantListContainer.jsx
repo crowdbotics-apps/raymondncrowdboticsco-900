@@ -176,6 +176,7 @@ class ParticipantListContainer extends React.Component {
                 totalItemsCount={data.length}
                 onChange={pageNumber => this.handlePageChange(pageNumber)}
                 innerClass={styles.pagination}
+                activeClass={styles.activeItem}
               />
             </div>
           </div>
