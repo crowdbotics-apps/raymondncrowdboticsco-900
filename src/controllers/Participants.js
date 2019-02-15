@@ -1,31 +1,52 @@
 import { Firestore } from '../lib/firebase';
+const { map } = require('p-iteration');
 
 export const getParticipants = async () => {
-  let participantsCollection = Firestore.collection('participant_groups');
+  let clientsCollection = Firestore.collection('clients');
 
   try {
-    let snapshot = await participantsCollection.get();
     let participants = [];
-    await snapshot.docs.map(async participantsGroupDoc => {
-      let participantsGroupData = await participantsGroupDoc.data();
+    let clientsSnapshot = await clientsCollection.get();
+
+    await map(clientsSnapshot.docs, async clientDoc => {
+      let clientData = await clientDoc.data();
+
       if (
-        participantsGroupData.participant_list &&
-        participantsGroupData.participant_list.length > 0
+        clientData &&
+        clientData.participant_group_ids &&
+        clientData.participant_group_ids.length > 0
       ) {
-        await participantsGroupData.participant_list.map(async data => {
-          let participant = {
-            name: data.name || '',
-            email: data.email || '',
-            organization: participantsGroupData.name || '',
-            division: participantsGroupData.division || '',
-            group: participantsGroupData.name || ',',
-            status: data.status || false,
-            participants_group_id: participantsGroupDoc.id
-          };
-          participants.push(participant);
+        await map(clientData.participant_group_ids, async participantId => {
+          let participantsGroupSnapshot = await Firestore.collection(
+            'participant_groups'
+          )
+            .doc(participantId)
+            .get();
+
+          let participantsGroupData = await participantsGroupSnapshot.data();
+
+          if (
+            participantsGroupData.participant_list &&
+            participantsGroupData.participant_list.length > 0
+          ) {
+            await map(participantsGroupData.participant_list, async data => {
+              let participant = {
+                name: data.name || '',
+                email: data.email || '',
+                organization: clientData.org || '',
+                division: participantsGroupData.division || '',
+                group: participantsGroupData.name || ',',
+                status: data.status || false,
+                participants_group_id: participantId
+              };
+
+              await participants.push(participant);
+            });
+          }
         });
       }
     });
+
     return participants;
   } catch (error) {
     throw error;

@@ -24,8 +24,7 @@ class ParticipantListContainer extends React.Component {
       data: [],
       keyword: '',
       activePage: 1,
-      itemPerPage: 5,
-      checked: true
+      itemPerPage: 5
     };
   }
 
