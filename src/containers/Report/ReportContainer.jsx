@@ -4,7 +4,7 @@ import Select from 'react-select';
 import Checkbox from 'rc-checkbox';
 import 'rc-checkbox/assets/index.css';
 
-import { ClientController } from 'controllers';
+import { ReportController, ClientController } from 'controllers';
 import styles from './ReportContainer.module.scss';
 
 const options = [
@@ -27,15 +27,72 @@ class ReportContainer extends React.Component {
     ];
 
     this.state = {
-      data: [],
-      keyword: '',
-      selectedOption: null
+      orgSelected: null,
+      filterSelected: null,
+      bulkActionSelected: null,
+      data: [
+        {
+          id: 1,
+          checked: false,
+          category: 'Greetings',
+          campaign: 'Buddy activity',
+          completions: '10 out of 50',
+          employee_group: 'Cashiers',
+          division: 'Macon'
+        },
+        {
+          id: 2,
+          checked: false,
+          category: 'Greetings',
+          campaign: 'Buddy activity',
+          completions: '10 out of 50',
+          employee_group: 'Cashiers',
+          division: 'Macon'
+        },
+        {
+          id: 3,
+          checked: false,
+          category: 'Greetings',
+          campaign: 'Buddy activity',
+          completions: '10 out of 50',
+          employee_group: 'Cashiers',
+          division: 'Macon'
+        },
+        {
+          id: 4,
+          checked: false,
+          category: 'Greetings',
+          campaign: 'Buddy activity',
+          completions: '10 out of 50',
+          employee_group: 'Cashiers',
+          division: 'Macon'
+        },
+        {
+          id: 5,
+          checked: false,
+          category: 'Greetings',
+          campaign: 'Buddy activity',
+          completions: '10 out of 50',
+          employee_group: 'Cashiers',
+          division: 'Macon'
+        }
+      ]
     };
   }
 
-  handleChange = selectedOption => {
-    this.setState({ selectedOption });
-    console.log('Option selected:', selectedOption);
+  handleOrgChange = orgSelected => {
+    this.setState({ orgSelected });
+    console.log('Option selected:', orgSelected);
+  };
+
+  handleFilterChange = filterSelected => {
+    this.setState({ filterSelected });
+    console.log('Option selected:', filterSelected);
+  };
+
+  handlebulkActionChange = bulkActionSelected => {
+    this.setState({ bulkActionSelected });
+    console.log('Option selected:', bulkActionSelected);
   };
 
   async componentDidMount() {
@@ -43,78 +100,43 @@ class ReportContainer extends React.Component {
   }
 
   reload = async () => {
-    let data = await ClientController.getClients();
+    let orgs = await ClientController.getClients();
+    let orgList = [];
 
-    data = data
-      .filter(client =>
-        client.org.toLowerCase().includes(this.state.keyword.toLowerCase())
-      )
-      .map(client => {
-        let item = { ...client };
-        let emailSet = new Set();
-        client.participant_groups.map(group => {
-          for (let participant of group.participant_list) {
-            emailSet.add(participant.email);
-          }
-        });
-        item.participants = Array.from(emailSet);
-        return item;
+    if (orgs && orgs.length > 0) {
+      await orgs.map(item => {
+        let org = {
+          label: item.org,
+          value: item.id
+        };
+        orgList.push(org);
       });
-    this.setState({
-      data
-    });
-  };
-
-  addClicked = () => {
-    this.props.history.push('/clients/add');
-  };
-
-  editClicked = clientId => () => {
-    this.props.history.push(`/clients/edit/${clientId}`);
-  };
-
-  deactivateClicked = clientId => async () => {
-    var res = window.confirm('Do you want to deactivate this client?');
-    if (res) {
-      await ClientController.deactivateClient(clientId);
-      await this.reload();
     }
+
+    this.setState({ orgList });
   };
 
-  activateClicked = clientId => async () => {
-    var res = window.confirm('Do you want to activate this client?');
-    if (res) {
-      await ClientController.activateClient(clientId);
-      await this.reload();
-    }
-  };
+  async select(selectedData) {
+    console.log('select', selectedData.id);
+    let { data } = this.state;
 
-  searchInputChanged = e => {
-    this.setState(
-      {
-        keyword: e.target.value
-      },
-      async () => {
-        if (!this.state.keyword) {
-          await this.reload();
-        }
+    await data.map(item => {
+      if (item.id === selectedData.id) {
+        item.checked = !selectedData.checked;
       }
-    );
-  };
+    });
 
-  searchInputKeyPressed = async e => {
-    if (e.charCode === 13) {
-      // enter pressed
-      await this.reload();
-    }
-  };
-
-  select(id) {
-    console.log('select', id);
+    this.setState({ data });
   }
 
   render() {
-    const { selectedOption } = this.state;
+    const {
+      orgSelected,
+      bulkActionSelected,
+      filterSelected,
+      orgList,
+      data
+    } = this.state;
 
     return (
       <div className={styles.wrapper}>
@@ -122,9 +144,9 @@ class ReportContainer extends React.Component {
           <span>Organization:</span>
           <div className={styles.select}>
             <Select
-              value={selectedOption}
-              onChange={this.handleChange}
-              options={options}
+              value={orgSelected}
+              onChange={this.handleOrgChange}
+              options={orgList}
             />
           </div>
         </div>
@@ -132,8 +154,8 @@ class ReportContainer extends React.Component {
           <span>Market filter By:</span>
           <div className={styles.select}>
             <Select
-              value={selectedOption}
-              onChange={this.handleChange}
+              value={filterSelected}
+              onChange={this.handleFilterChange}
               options={options}
             />
           </div>
@@ -142,13 +164,13 @@ class ReportContainer extends React.Component {
           <span>Bulk Action:</span>
           <div className={styles.select}>
             <Select
-              value={selectedOption}
-              onChange={this.handleChange}
+              value={bulkActionSelected}
+              onChange={this.handlebulkActionChange}
               options={options}
             />
           </div>
         </div>
-        {this.state.data.length ? (
+        {data.length ? (
           <table>
             <thead>
               <tr className={styles.header}>
@@ -158,25 +180,25 @@ class ReportContainer extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((item, index) => (
+              {data.map((item, index) => (
                 <tr key={item.id}>
                   <td>
                     <Checkbox
                       checked={item.checked}
-                      onChange={() => this.select(item.id)}
+                      onChange={() => this.select(item)}
                     />
                   </td>
-                  <td>{item.org}</td>
-                  <td>{item.status}</td>
-                  <td>{item.participants.length}</td>
-                  <td>{item.participant_group_ids.length}</td>
-                  <td>{item.participant_group_ids.length}</td>
+                  <td>{item.category}</td>
+                  <td>{item.campaign}</td>
+                  <td>{item.completions}</td>
+                  <td>{item.employee_group}</td>
+                  <td>{item.division}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <h3>No Search Result</h3>
+          <h3>No Result</h3>
         )}
       </div>
     );
