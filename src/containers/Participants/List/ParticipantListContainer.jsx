@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { ParticipantsController } from 'controllers';
 import Pagination from 'react-js-pagination';
+import Switch from 'react-switch';
 import styles from './ParticipantListContainer.module.scss';
 
 var _ = require('lodash');
@@ -16,14 +17,15 @@ class ParticipantListContainer extends React.Component {
       'Organization',
       'Divisions / Locations',
       'Group',
-      'Actions'
+      'Active'
     ];
 
     this.state = {
       data: [],
       keyword: '',
       activePage: 1,
-      itemPerPage: 4
+      itemPerPage: 4,
+      checked: true
     };
   }
 
@@ -106,6 +108,16 @@ class ParticipantListContainer extends React.Component {
     this.setState({ activePage: pageNumber });
   }
 
+  async handleChange(participant) {
+    let { data } = this.state;
+    await data.map((item, index) => {
+      if (item.email === participant.email) {
+        item.status = !participant.status;
+      }
+    });
+    return this.setState({ data });
+  }
+
   createRow() {
     const { data } = this.state;
     let children = [];
@@ -124,15 +136,11 @@ class ParticipantListContainer extends React.Component {
             <td>{item.division}</td>
             <td>{item.group}</td>
             <td>
-              {item.status === 'active' ? (
-                <span onClick={this.deactivateClicked(item)}>
-                  <i className={`fa fa-trash-o ${styles.iconTrash}`} />
-                </span>
-              ) : (
-                <span onClick={this.activateClicked(item)}>
-                  <i className={`fa fa-refresh ${styles.iconRefresh}`} />
-                </span>
-              )}
+              <Switch
+                onChange={() => this.handleChange(item)}
+                checked={item.status}
+                id='normal-switch'
+              />
             </td>
           </tr>
         )
@@ -140,6 +148,7 @@ class ParticipantListContainer extends React.Component {
     }
     return children;
   }
+
   render() {
     const { data } = this.state;
 
@@ -162,7 +171,7 @@ class ParticipantListContainer extends React.Component {
             <table>
               <thead>
                 <tr className={styles.header}>
-                  {this.columns.map(item => (
+                  {this.columns.map((item, index) => (
                     <th key={item}>{item}</th>
                   ))}
                 </tr>
