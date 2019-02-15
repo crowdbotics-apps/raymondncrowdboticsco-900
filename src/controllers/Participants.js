@@ -45,7 +45,6 @@ export const getClientById = clientId =>
     });
   });
 
-// search clients with the criteria
 export const getParticipants = async () => {
   let participantsCollection = Firestore.collection('participant_groups');
 
@@ -73,6 +72,28 @@ export const getParticipants = async () => {
       }
     });
     return participants;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const changeParticipantStatus = async participant => {
+  try {
+    let participantsDoc = await Firestore.collection('participant_groups')
+      .doc(participant.participants_group_id)
+      .get();
+
+    let data = await participantsDoc.data();
+
+    await data.participant_list.map(async (item, index) => {
+      if (item.email === participant.email) {
+        item.status = !participant.status;
+      }
+    });
+
+    return Firestore.collection('participant_groups')
+      .doc(participant.participants_group_id)
+      .set(data);
   } catch (error) {
     throw error;
   }

@@ -24,7 +24,7 @@ class ParticipantListContainer extends React.Component {
       data: [],
       keyword: '',
       activePage: 1,
-      itemPerPage: 4,
+      itemPerPage: 5,
       checked: true
     };
   }
@@ -37,22 +37,6 @@ class ParticipantListContainer extends React.Component {
     let data = await ParticipantsController.getParticipants();
 
     return this.setState({ data });
-  };
-
-  deactivateClicked = clientId => async () => {
-    // var res = window.confirm('Do you want to deactivate this client?');
-    // if (res) {
-    //   await ClientController.deactivateClient(clientId);
-    //   await this.reload();
-    // }
-  };
-
-  activateClicked = clientId => async () => {
-    // var res = window.confirm('Do you want to activate this client?');
-    // if (res) {
-    //   await ClientController.activateClient(clientId);
-    //   await this.reload();
-    // }
   };
 
   searchInputChanged = e => {
@@ -109,13 +93,20 @@ class ParticipantListContainer extends React.Component {
   }
 
   async handleChange(participant) {
-    let { data } = this.state;
-    await data.map((item, index) => {
-      if (item.email === participant.email) {
-        item.status = !participant.status;
-      }
-    });
-    return this.setState({ data });
+    let res = window.confirm(
+      'Do you want to change active status of this participant?'
+    );
+    if (res) {
+      await ParticipantsController.changeParticipantStatus(participant);
+
+      let { data } = this.state;
+      await data.map((item, index) => {
+        if (item.email === participant.email) {
+          item.status = !participant.status;
+        }
+      });
+      return this.setState({ data });
+    }
   }
 
   createRow() {
