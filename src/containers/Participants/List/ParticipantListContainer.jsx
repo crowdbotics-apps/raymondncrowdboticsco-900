@@ -100,7 +100,7 @@ class ParticipantListContainer extends React.Component {
       await ParticipantsController.changeParticipantStatus(participant);
 
       let { data } = this.state;
-      await data.map((item, index) => {
+      await data.map(item => {
         if (item.email === participant.email) {
           item.status = !participant.status;
         }

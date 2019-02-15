@@ -1,50 +1,5 @@
 import { Firestore } from '../lib/firebase';
 
-export const deactivateClient = async clientId => {
-  try {
-    let clientCollection = Firestore.collection('clients');
-    await clientCollection.doc(clientId).update({
-      status: 'inactive'
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const activateClient = async clientId => {
-  try {
-    let clientCollection = Firestore.collection('clients');
-    await clientCollection.doc(clientId).update({
-      status: 'active'
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getClientById = clientId =>
-  new Promise((resolve, reject) => {
-    let clientDoc = Firestore.collection('clients').doc(clientId);
-    clientDoc.onSnapshot(async snapshot => {
-      let clientData = snapshot.data();
-
-      let tasks = clientData.participant_group_ids.map(
-        groupId =>
-          new Promise((resolve, reject) => {
-            let participant_group_doc = Firestore.collection(
-              'participant_groups'
-            ).doc(groupId);
-            participant_group_doc.onSnapshot(group_snapshot => {
-              let participant_group_data = group_snapshot.data();
-              resolve(participant_group_data);
-            });
-          })
-      );
-      clientData.participant_groups = await Promise.all(tasks);
-      resolve(clientData);
-    });
-  });
-
 export const getParticipants = async () => {
   let participantsCollection = Firestore.collection('participant_groups');
 
