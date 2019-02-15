@@ -40,7 +40,7 @@ export const changeParticipantStatus = async participant => {
 
     let data = await participantsDoc.data();
 
-    await data.participant_list.map(async (item, index) => {
+    await data.participant_list.map(async item => {
       if (item.email === participant.email) {
         item.status = !participant.status;
       }
