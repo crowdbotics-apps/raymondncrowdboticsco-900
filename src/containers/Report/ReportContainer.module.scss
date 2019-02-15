@@ -139,4 +139,20 @@
   h3 {
     margin: 8px;
   }
+
+  .buttonContainer {
+    flex: row;
+    justify-content: space-between;
+    margin: 8px;
+
+    .button {
+      margin-right: 20px;
+    }
+  }
+
+  .select {
+    select .span {
+      background-color: #ffffff;
+    }
+  }
 }

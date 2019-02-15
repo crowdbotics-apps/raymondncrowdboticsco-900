@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import { ButtonToolbar, Button } from 'react-bootstrap';
 import Checkbox from 'rc-checkbox';
 import 'rc-checkbox/assets/index.css';
 
@@ -129,6 +130,14 @@ class ReportContainer extends React.Component {
     this.setState({ data });
   }
 
+  downloadData() {
+    alert('download data');
+  }
+
+  downloadMedia() {
+    alert('download media');
+  }
+
   render() {
     const {
       orgSelected,
@@ -200,6 +209,25 @@ class ReportContainer extends React.Component {
         ) : (
           <h3>No Result</h3>
         )}
+        <div className={styles.buttonContainer}>
+          <ButtonToolbar>
+            <Button
+              variant='primary'
+              size='md'
+              className={styles.button}
+              onClick={() => this.downloadData()}
+            >
+              Download data file
+            </Button>
+            <Button
+              variant='primary'
+              size='md'
+              onClick={() => this.downloadMedia()}
+            >
+              Download Media
+            </Button>
+          </ButtonToolbar>
+        </div>
       </div>
     );
   }
