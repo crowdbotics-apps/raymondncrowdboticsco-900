@@ -12,12 +12,12 @@ class ParticipantListContainer extends React.Component {
     super(props);
 
     this.columns = [
-      'Name',
-      'Email',
-      'Organization',
-      'Divisions / Locations',
-      'Group',
-      'Active'
+      { title: 'Name', key: 'name' },
+      { title: 'Email', key: 'email' },
+      { title: 'Organization', key: 'organization' },
+      { title: 'Divisions / Locations', key: 'division' },
+      { title: 'Group', key: 'group' },
+      { title: 'Active', key: 'status' }
     ];
 
     this.state = {
@@ -140,6 +140,12 @@ class ParticipantListContainer extends React.Component {
     return children;
   }
 
+  sortBy(key) {
+    let { data } = this.state;
+    data = _.orderBy(data, key);
+    this.setState({ data });
+  }
+
   render() {
     const { data } = this.state;
 
@@ -163,7 +169,9 @@ class ParticipantListContainer extends React.Component {
               <thead>
                 <tr className={styles.header}>
                   {this.columns.map((item, index) => (
-                    <th key={item}>{item}</th>
+                    <th key={item.key} onClick={() => this.sortBy(item.key)}>
+                      {item.title} &#x21C5;
+                    </th>
                   ))}
                 </tr>
               </thead>
