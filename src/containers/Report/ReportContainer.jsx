@@ -23,7 +23,7 @@ class ReportContainer extends React.Component {
       'Category',
       'Campaign',
       'Completions',
-      'Employee Group',
+      'Participants Group',
       'Divisions / Locations'
     ];
 
@@ -219,13 +219,13 @@ class ReportContainer extends React.Component {
             >
               Download data file
             </Button>
-            <Button
+            {/* <Button
               variant='primary'
               size='md'
               onClick={() => this.downloadMedia()}
             >
               Download Media
-            </Button>
+            </Button> */}
           </ButtonToolbar>
         </div>
       </div>
