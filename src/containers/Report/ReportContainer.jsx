@@ -20,7 +20,6 @@ class ReportContainer extends React.Component {
 
     this.columns = [
       'Select',
-      'Category',
       'Campaign',
       'Completions',
       'Participants Group',
@@ -31,6 +30,7 @@ class ReportContainer extends React.Component {
       orgSelected: null,
       filterSelected: null,
       bulkActionSelected: null,
+      loading: true,
       data: [
         {
           id: 1,
@@ -101,6 +101,7 @@ class ReportContainer extends React.Component {
   }
 
   reload = async () => {
+    await this.setState({ loading: true });
     let orgs = await ClientController.getClients();
     let orgList = [];
 
@@ -114,7 +115,11 @@ class ReportContainer extends React.Component {
       });
     }
 
-    this.setState({ orgList });
+    await this.setState({ orgList });
+
+    let campaigns = await ReportController.getCampaigns();
+    await this.setState({ campaigns });
+    this.setState({ loading: true });
   };
 
   async select(selectedData) {
@@ -144,7 +149,8 @@ class ReportContainer extends React.Component {
       bulkActionSelected,
       filterSelected,
       orgList,
-      data
+      campaigns,
+      loading
     } = this.state;
 
     return (
@@ -159,7 +165,7 @@ class ReportContainer extends React.Component {
             />
           </div>
         </div>
-        <div className={styles.selector}>
+        {/* <div className={styles.selector}>
           <span>Market filter By:</span>
           <div className={styles.select}>
             <Select
@@ -178,8 +184,8 @@ class ReportContainer extends React.Component {
               options={options}
             />
           </div>
-        </div>
-        {data.length ? (
+        </div> */}
+        {!loading && campaigns.length ? (
           <table>
             <thead>
               <tr className={styles.header}>
@@ -189,7 +195,7 @@ class ReportContainer extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
+              {campaigns.map((item, index) => (
                 <tr key={item.id}>
                   <td>
                     <Checkbox
@@ -197,8 +203,7 @@ class ReportContainer extends React.Component {
                       onChange={() => this.select(item)}
                     />
                   </td>
-                  <td>{item.category}</td>
-                  <td>{item.campaign}</td>
+                  <td>{item.name}</td>
                   <td>{item.completions}</td>
                   <td>{item.employee_group}</td>
                   <td>{item.division}</td>
