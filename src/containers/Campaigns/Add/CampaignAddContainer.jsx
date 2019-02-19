@@ -92,7 +92,6 @@ class CampaignAddContainer extends React.Component {
       return;
     }
 
-    this.context.showLoading();
     // validation for questions
     for (var i = 0; i < questions.length; i++) {
       if (!questions[i].question) {
@@ -109,8 +108,8 @@ class CampaignAddContainer extends React.Component {
       }
     }
 
+    this.context.showLoading();
     // adding a campaign
-    // console.log(this.state.questions);
     await CampaignController.addCampaign({
       basic: this.state.basic,
       questions: this.state.questions
