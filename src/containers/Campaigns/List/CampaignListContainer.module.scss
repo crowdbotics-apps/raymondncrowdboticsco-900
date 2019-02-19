@@ -8,46 +8,69 @@
 
   .top {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
 
-    .searchbar {
+    .searchContainer {
       flex: 1;
-      height: 40px;
-      border-radius: 20px;
-      background-color: $white;
-      border: 1px solid $primary;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0px 20px;
-      margin-right: 20px;
 
-      &:active {
-        background-color: $white;
-      }
-
-      .iconSearch {
-        color: $primary;
-        font-size: 18px;
-        margin-right: 5px;
-      }
-
-      input {
-        width: 100%;
+      .searchbar {
         height: 40px;
-        font-size: 16px;
-        border-style: none;
+        border-radius: 20px;
+        background-color: $white;
+        border: 1px solid $primary;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0px 20px;
+        margin-right: 20px;
 
-        &:focus {
-          outline: none;
+        &:active {
+          background-color: $white;
+        }
+
+        .iconSearch {
+          color: $primary;
+          font-size: 18px;
+          margin-right: 5px;
+        }
+
+        input {
+          width: 100%;
+          height: 40px;
+          font-size: 16px;
+          border-style: none;
+
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+
+      .searchfilters {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .filter {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+
+          cursor: pointer;
+
+          input {
+            margin-right: 5px;
+          }
         }
       }
     }
 
-    div {
+    .btnAdd {
       width: 150px;
       height: 40px;
       border-radius: 20px;

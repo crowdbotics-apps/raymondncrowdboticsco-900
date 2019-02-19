@@ -5,6 +5,7 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "firebase": "^5.8.2",
+    "moment": "^2.24.0",
     "lodash": "^4.17.11",
     "node-sass": "^4.11.0",
     "p-iteration": "^1.1.7",

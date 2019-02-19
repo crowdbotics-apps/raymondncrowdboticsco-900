@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { AppContext } from 'components';
+import { CampaignController } from 'controllers';
 import styles from './CampaignListContainer.module.scss';
 
 class CampaignListContainer extends React.Component {
@@ -20,27 +22,127 @@ class CampaignListContainer extends React.Component {
     ];
 
     this.state = {
-      data: []
+      data: [],
+      filter: 'name',
+      keyword: ''
     };
   }
 
-  addClicked = () => {};
+  async componentDidMount() {
+    await this.reload();
+  }
+
+  reload = async () => {
+    this.context.showLoading();
+
+    let data = await CampaignController.getCampaigns();
+    if (this.state.filter === 'name') {
+      data = data.filter(campaign =>
+        campaign.name.toLowerCase().includes(this.state.keyword.toLowerCase())
+      );
+    } else {
+      data = data.filter(campaign =>
+        campaign.client.org
+          .toLowerCase()
+          .includes(this.state.keyword.toLowerCase())
+      );
+    }
+    this.setState({
+      data
+    });
+
+    this.context.hideLoading();
+  };
+
+  searchfilterChanged = filter => () => {
+    this.setState({
+      filter
+    });
+  };
+
+  addClicked = () => {
+    this.props.history.push('/campaigns/add');
+  };
+
+  editClicked = campaignId => () => {
+    this.props.history.push(`/campaigns/edit/${campaignId}`);
+  };
+
+  activateClicked = id => async () => {
+    if (window.confirm('Do you want to activate this campaign?')) {
+      await CampaignController.activateCampaign(id);
+    }
+  };
+
+  deactivateClicked = id => async () => {
+    if (window.confirm('Do you want to deactivate this campaign?')) {
+      await CampaignController.deactivateCampaign(id);
+    }
+  };
+
+  searchInputChanged = e => {
+    this.setState(
+      {
+        keyword: e.target.value
+      },
+      async () => {
+        if (!this.state.keyword) {
+          await this.reload();
+        }
+      }
+    );
+  };
+
+  searchInputKeyPressed = async e => {
+    if (e.charCode === 13) {
+      // enter pressed
+      await this.reload();
+    }
+  };
 
   render() {
     return (
       <div className={styles.wrapper}>
         <div className={styles.top}>
-          <div className={styles.searchbar}>
-            <i className={`fa fa-search ${styles.iconSearch}`} />
-            <input
-              type='text'
-              placeholder='Type organization name here and press enter to get the result...'
-              value={this.state.keyword}
-              onChange={this.searchInputChanged}
-              onKeyPress={this.searchInputKeyPressed}
-            />
+          <div className={styles.searchContainer}>
+            <div className={styles.searchbar}>
+              <i className={`fa fa-search ${styles.iconSearch}`} />
+              <input
+                type='text'
+                placeholder='Type here and press enter to get the result...'
+                value={this.state.keyword}
+                onChange={this.searchInputChanged}
+                onKeyPress={this.searchInputKeyPressed}
+              />
+            </div>
+            <div className={styles.searchfilters}>
+              <div
+                className={styles.filter}
+                onClick={this.searchfilterChanged('name')}
+              >
+                <input
+                  type='checkbox'
+                  value='name'
+                  checked={this.state.filter === 'name'}
+                  onChange={this.searchfilterChanged('name')}
+                />
+                Search by name
+              </div>
+              <div
+                className={styles.filter}
+                onClick={this.searchfilterChanged('org')}
+              >
+                <input
+                  type='checkbox'
+                  value='org'
+                  checked={this.state.filter === 'org'}
+                  onChange={this.searchfilterChanged('org')}
+                />
+                Search by organization
+              </div>
+            </div>
           </div>
-          <div onClick={this.addClicked}>
+          <div className={styles.btnAdd} onClick={this.addClicked}>
             <i className={`fa fa-plus ${styles.icon}`} />
             Add
           </div>
@@ -59,12 +161,12 @@ class CampaignListContainer extends React.Component {
                 <tr key={item.id}>
                   <td>{`${index + 1}`}</td>
                   <td>{item.name}</td>
-                  <td>{item.org}</td>
+                  <td>{item.client.org}</td>
                   <td>{item.status}</td>
-                  <td>{item.progress}</td>
-                  <td>{item.participants.length}</td>
-                  <td>{item.category}</td>
-                  <td>{item.group}</td>
+                  <td>progress</td>
+                  <td>Participant length</td>
+                  <td>category</td>
+                  <td>group</td>
                   <td>
                     <span onClick={this.editClicked(item.id)}>
                       <i
@@ -92,6 +194,8 @@ class CampaignListContainer extends React.Component {
     );
   }
 }
+
+CampaignListContainer.contextType = AppContext;
 
 CampaignListContainer.propTypes = {
   history: PropTypes.object

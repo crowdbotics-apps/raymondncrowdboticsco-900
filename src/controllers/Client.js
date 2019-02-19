@@ -8,7 +8,8 @@ export const addClient = async payload => {
       let participant_list = group.participant_list.map(participant => {
         return {
           name: participant[0],
-          email: participant[1]
+          email: participant[1],
+          status: true
         };
       });
       groupIds.push(groupDoc.id);
@@ -141,6 +142,18 @@ export const getClients = async () => {
     let tasks = snapshot.docs.map(clientDoc => getClientById(clientDoc.id));
     let clients = Promise.all(tasks);
     return clients;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getParticipantGroups = async () => {
+  let groupCollection = Firestore.collection('participant_groups');
+  try {
+    let snapshot = await groupCollection.get();
+    let tasks = snapshot.docs.map(groupDoc => groupDoc.data());
+    let participant_groups = Promise.all(tasks);
+    return participant_groups;
   } catch (error) {
     throw error;
   }

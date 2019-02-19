@@ -1,0 +1,346 @@
+@import "theme/colors.scss";
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  font-size: 16px;
+
+  table {
+    border: 1px solid $light-grey;
+    padding: 20px 10px;
+    margin-bottom: 50px;
+
+    h2 {
+      font-weight: 600;
+    }
+
+    tr {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    td {
+      flex: 1;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+
+    .textareaItem {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      font-size: 16px;
+      margin-bottom: 10px;
+
+      span {
+        width: 150px;
+        text-align: center;
+        margin-top: 10px;
+      }
+      .textContainer {
+        flex: 1;
+        height: 100px;
+        padding: 10px 20px;
+        border: 1px solid $light-grey;
+        overflow-y: auto;
+        word-break: break-all;
+      }
+    }
+  }
+
+  .inputItem {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+
+    span {
+      width: 150px;
+      text-align: center;
+    }
+    input {
+      flex: 1;
+      height: 40px;
+      font-size: 16px;
+      padding: 0 20px;
+      border: 1px solid $light-grey;
+
+      &:disabled {
+        background-color: #eeeeee;
+      }
+    }
+
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+
+      height: 40px;
+      flex: 1;
+      box-sizing: content-box;
+      padding: 0 20px;
+      font-size: 16px;
+      border: 1px solid $light-grey;
+      border-radius: 1px;
+      background-color: $white;
+    }
+  }
+
+  .questionContainer {
+    border: 1px solid $light-grey;
+    padding: 20px;
+    margin-bottom: 20px;
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      i {
+        font-size: 32px;
+        color: $danger;
+
+        &:active {
+          opacity: 0.5;
+        }
+      }
+    }
+    .qtypeContainer {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .qtypeRadio {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        height: 30px;
+        cursor: pointer;
+
+        input {
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .inputItem {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      font-size: 16px;
+      margin-bottom: 10px;
+
+      span {
+        width: 150px;
+        text-align: left;
+      }
+
+      input {
+        flex: 1;
+        height: 40px;
+        font-size: 16px;
+        padding: 0 20px;
+        border: 1px solid $light-grey;
+
+        &:disabled {
+          background-color: #eeeeee;
+        }
+      }
+    }
+
+    .mediaContainer {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+
+      span {
+        width: 150px;
+        margin-top: 10px;
+      }
+
+      div {
+        flex: 1;
+
+        .file {
+          display: none;
+        }
+
+        .btnUpload {
+          width: 250px;
+          height: 40px;
+          border-radius: 1px;
+          font-size: 16px;
+          line-height: 40px;
+          font-weight: 600;
+          text-align: center;
+          color: $white;
+          background-color: $primary;
+          align-items: center;
+          border: 1px solid $primary;
+          cursor: pointer;
+
+          .icon {
+            margin-right: 5px;
+          }
+
+          &:active {
+            background-color: $white;
+            color: $primary;
+          }
+        }
+
+        .media {
+          width: 250px;
+          margin-top: 10px;
+        }
+
+        .nomedia {
+          width: 100%;
+          color: $danger;
+          margin-top: 10px;
+        }
+      }
+    }
+
+    .answerContainer {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+
+      span {
+        width: 150px;
+        margin-top: 10px;
+      }
+
+      div {
+        flex: 1;
+
+        .answerItem {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          input {
+            flex: 1;
+            height: 40px;
+            font-size: 16px;
+            padding: 0 20px;
+            border: 1px solid $light-grey;
+            margin-bottom: 10px;
+
+            &:disabled {
+              background-color: #eeeeee;
+            }
+          }
+          span {
+            width: 30px;
+            margin: 0 5px 10px 5px;
+            text-align: right;
+            i {
+              font-size: 24px;
+              color: $danger;
+
+              &:active {
+                opacity: 0.5;
+              }
+            }
+          }
+        }
+
+        .btnAdd {
+          width: 100px;
+          height: 40px;
+          border-radius: 1px;
+          font-size: 16px;
+          line-height: 40px;
+          font-weight: 600;
+          color: $primary;
+          background-color: $white;
+          border: 1px solid $primary;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+
+          i {
+            margin-right: 5px;
+          }
+
+          &:active {
+            background-color: $primary;
+            color: $white;
+          }
+        }
+      }
+    }
+
+    .btnAddMore {
+      font-size: 18px;
+      text-decoration: underline;
+      font-weight: 600;
+      color: $primary;
+      cursor: pointer;
+
+      &:active {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .btnGroup {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+
+    .btnSave {
+      width: 100px;
+      height: 40px;
+      border-radius: 5px;
+      font-size: 16px;
+      line-height: 40px;
+      font-weight: 600;
+      text-align: center;
+      color: $primary;
+      align-items: center;
+      border: 1px solid $primary;
+      cursor: pointer;
+      margin-right: 50px;
+
+      &:active {
+        background-color: $primary;
+        color: $white;
+      }
+    }
+
+    .btnCancel {
+      width: 100px;
+      height: 40px;
+      border-radius: 5px;
+      font-size: 16px;
+      line-height: 40px;
+      font-weight: 600;
+      text-align: center;
+      color: $danger;
+      align-items: center;
+      border: 1px solid $danger;
+      cursor: pointer;
+
+      &:active {
+        background-color: $danger;
+        color: $white;
+      }
+    }
+  }
+}

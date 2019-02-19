@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Papa from 'papaparse';
 import uuid from 'uuid/v4';
 
+import { AppContext } from 'components';
 import { ClientController } from 'controllers';
 
 import styles from './ClientAddContainer.module.scss';
@@ -33,6 +34,7 @@ class ClientAddContainer extends React.Component {
   };
 
   addClicked = async () => {
+    this.context.showLoading();
     try {
       await ClientController.addClient(this.state);
       alert('A new client is added.');
@@ -40,6 +42,7 @@ class ClientAddContainer extends React.Component {
     } catch (error) {
       alert(error.message);
     }
+    this.context.hideLoading();
   };
 
   cancelClicked = () => {
@@ -50,7 +53,7 @@ class ClientAddContainer extends React.Component {
     let { groups } = this.state;
 
     let last = groups[groups.length - 1];
-    if (!last.name || !last.division || !last.number_of_participants) {
+    if (!last.name || !last.division) {
       alert('Please complete the current participant group to add more.');
       return;
     }
@@ -124,7 +127,7 @@ class ClientAddContainer extends React.Component {
               <h2>Participant Group</h2>
               {this.state.groups.length > 1 && (
                 <span onClick={this.groupRemove(index)}>
-                  <i className={`fa fa-times-circle-o ${styles.iconRemove}`} />
+                  <i className={`fa fa-minus-circle ${styles.iconRemove}`} />
                 </span>
               )}
             </div>
@@ -199,6 +202,8 @@ class ClientAddContainer extends React.Component {
     );
   }
 }
+
+ClientAddContainer.contextType = AppContext;
 
 ClientAddContainer.propTypes = {
   history: PropTypes.object
