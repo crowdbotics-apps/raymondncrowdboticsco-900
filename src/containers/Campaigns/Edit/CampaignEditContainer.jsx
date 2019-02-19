@@ -71,6 +71,7 @@ class CampaignEditContainer extends React.Component {
       id: uuid(),
       ...question
     }));
+    console.log(questions);
     this.setState({
       clients,
       participant_groups,

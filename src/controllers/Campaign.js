@@ -12,8 +12,7 @@ export const addCampaign = async payload => {
           questions.push({
             type: question.type,
             question: question.question,
-            answers: question.answers,
-            media_type: question.media.type
+            answers: question.answers
           });
           if (question.media) {
             let ref = Storage.ref(`media/${moment().valueOf()}`);
@@ -25,12 +24,12 @@ export const addCampaign = async payload => {
               () => {
                 task.snapshot.ref.getDownloadURL().then(downloadUrl => {
                   questions[index].media = downloadUrl;
+                  questions[index].media_type = question.media.type;
                   resolve(downloadUrl);
                 });
               }
             );
           }
-          resolve();
         })
     );
     await Promise.all(tasks);

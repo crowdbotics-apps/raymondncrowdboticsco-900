@@ -63,7 +63,6 @@ class CampaignAddContainer extends React.Component {
   };
 
   addClicked = async () => {
-    this.context.showLoading();
     // validation for basic info
     let { basic, questions } = this.state;
     basic['description'] = this.description.innerHTML;
@@ -93,6 +92,7 @@ class CampaignAddContainer extends React.Component {
       return;
     }
 
+    this.context.showLoading();
     // validation for questions
     for (var i = 0; i < questions.length; i++) {
       if (!questions[i].question) {
@@ -110,7 +110,7 @@ class CampaignAddContainer extends React.Component {
     }
 
     // adding a campaign
-
+    // console.log(this.state.questions);
     await CampaignController.addCampaign({
       basic: this.state.basic,
       questions: this.state.questions
@@ -506,7 +506,7 @@ class CampaignAddContainer extends React.Component {
         )}
         <div className={styles.btnGroup}>
           <div className={styles.btnSave} onClick={this.addClicked}>
-            Add
+            Save
           </div>
           <div className={styles.btnCancel} onClick={this.cancelClicked}>
             Cancel

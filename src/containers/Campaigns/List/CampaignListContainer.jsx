@@ -71,12 +71,14 @@ class CampaignListContainer extends React.Component {
   activateClicked = id => async () => {
     if (window.confirm('Do you want to activate this campaign?')) {
       await CampaignController.activateCampaign(id);
+      await this.reload();
     }
   };
 
   deactivateClicked = id => async () => {
     if (window.confirm('Do you want to deactivate this campaign?')) {
       await CampaignController.deactivateCampaign(id);
+      await this.reload();
     }
   };
 
