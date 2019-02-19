@@ -63,7 +63,7 @@ class CampaignAddContainer extends React.Component {
     };
   };
 
-  addClicked = () => {
+  addClicked = async () => {
     // validation for basic info
     let { basic, questions } = this.state;
     basic['description'] = this.description.innerHTML;
@@ -110,12 +110,12 @@ class CampaignAddContainer extends React.Component {
     }
 
     // adding a campaign
-    console.log(this.state.questions);
 
-    // CampaignController.addCampaign({
-    //   basic: this.state.basic,
-    //   questions: this.state.questions
-    // });
+    await CampaignController.addCampaign({
+      basic: this.state.basic,
+      questions: this.state.questions
+    });
+    this.props.history.goBack();
   };
 
   cancelClicked = () => {
