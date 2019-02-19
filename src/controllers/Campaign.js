@@ -29,6 +29,8 @@ export const addCampaign = async payload => {
                 });
               }
             );
+          } else {
+            resolve();
           }
         })
     );
@@ -82,6 +84,8 @@ export const updateCampaign = async payload => {
           } else if (question.media && question.media_type) {
             questions[index].media = question.media;
             questions[index].media_type = question.media_type;
+            resolve();
+          } else {
             resolve();
           }
         })

@@ -71,7 +71,6 @@ class CampaignEditContainer extends React.Component {
       id: uuid(),
       ...question
     }));
-    console.log(questions);
     this.setState({
       clients,
       participant_groups,
@@ -523,7 +522,7 @@ class CampaignEditContainer extends React.Component {
               </td>
               <td>
                 <div className={styles.inputItem}>
-                  <span>Location</span>
+                  <span>Division / Location</span>
                   <input disabled value={this.state.basic['location']} />
                 </div>
               </td>

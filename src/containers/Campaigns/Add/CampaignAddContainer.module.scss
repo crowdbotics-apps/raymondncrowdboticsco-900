@@ -10,6 +10,7 @@
     border: 1px solid $light-grey;
     padding: 20px 10px;
     margin-bottom: 50px;
+    width: 100%;
 
     h2 {
       font-weight: 600;
@@ -202,7 +203,6 @@
 
         .nomedia {
           width: 100%;
-          color: $danger;
           margin-top: 10px;
         }
       }

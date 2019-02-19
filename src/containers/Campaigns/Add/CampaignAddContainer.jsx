@@ -472,7 +472,7 @@ class CampaignAddContainer extends React.Component {
               </td>
               <td>
                 <div className={styles.inputItem}>
-                  <span>Location</span>
+                  <span>Division / Location</span>
                   <input disabled value={this.state.basic['location']} />
                 </div>
               </td>
