@@ -8,6 +8,8 @@ import 'rc-checkbox/assets/index.css';
 import { ReportController, ClientController } from 'controllers';
 import styles from './ReportContainer.module.scss';
 
+var _ = require('lodash');
+
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberry', label: 'Strawberry' },
@@ -81,20 +83,26 @@ class ReportContainer extends React.Component {
     };
   }
 
-  handleOrgChange = orgSelected => {
-    this.setState({ orgSelected });
+  handleOrgChange = async orgSelected => {
+    await this.setState({ orgSelected });
     console.log('Option selected:', orgSelected);
+
+    await this.getCampaigns();
+    let filterCampaings = _.map(this.state.campaigns, function(o) {
+      if (o.client_id === orgSelected.value) return o;
+    });
+    await this.setState({ campaigns: filterCampaings });
   };
 
-  handleFilterChange = filterSelected => {
-    this.setState({ filterSelected });
-    console.log('Option selected:', filterSelected);
-  };
+  // handleFilterChange = filterSelected => {
+  //   this.setState({ filterSelected });
+  //   console.log('Option selected:', filterSelected);
+  // };
 
-  handlebulkActionChange = bulkActionSelected => {
-    this.setState({ bulkActionSelected });
-    console.log('Option selected:', bulkActionSelected);
-  };
+  // handlebulkActionChange = bulkActionSelected => {
+  //   this.setState({ bulkActionSelected });
+  //   console.log('Option selected:', bulkActionSelected);
+  // };
 
   async componentDidMount() {
     await this.reload();
@@ -117,22 +125,29 @@ class ReportContainer extends React.Component {
 
     await this.setState({ orgList });
 
+    await this.getCampaigns();
+    this.setState({ loading: false });
+  };
+
+  async getCampaigns() {
+    await this.setState({ loading: true });
     let campaigns = await ReportController.getCampaigns();
     await this.setState({ campaigns });
-    this.setState({ loading: true });
-  };
+    console.log(campaigns);
+    await this.setState({ loading: false });
+  }
 
   async select(selectedData) {
     console.log('select', selectedData.id);
-    let { data } = this.state;
+    let { campaigns } = this.state;
 
-    await data.map(item => {
+    await campaigns.map(item => {
       if (item.id === selectedData.id) {
         item.checked = !selectedData.checked;
       }
     });
 
-    this.setState({ data });
+    this.setState({ campaigns });
   }
 
   downloadData() {
@@ -141,6 +156,31 @@ class ReportContainer extends React.Component {
 
   downloadMedia() {
     alert('download media');
+  }
+
+  createRow() {
+    const { campaigns } = this.state;
+    let children = [];
+    for (var i = 0; i < campaigns.length; i++) {
+      let item = campaigns[i];
+      children.push(
+        _.isEmpty(item) ? null : (
+          <tr key={item.id}>
+            <td>
+              <Checkbox
+                checked={item.checked}
+                onChange={() => this.select(item)}
+              />
+            </td>
+            <td>{item.name}</td>
+            <td>{`${item.answers} out of ${item.completion}`}</td>
+            <td>{item.participant_group_name}</td>
+            <td>{item.division}</td>
+          </tr>
+        )
+      );
+    }
+    return children;
   }
 
   render() {
@@ -194,22 +234,7 @@ class ReportContainer extends React.Component {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {campaigns.map((item, index) => (
-                <tr key={item.id}>
-                  <td>
-                    <Checkbox
-                      checked={item.checked}
-                      onChange={() => this.select(item)}
-                    />
-                  </td>
-                  <td>{item.name}</td>
-                  <td>{item.completions}</td>
-                  <td>{item.employee_group}</td>
-                  <td>{item.division}</td>
-                </tr>
-              ))}
-            </tbody>
+            <tbody>{this.createRow()}</tbody>
           </table>
         ) : (
           <h3>No Result</h3>
