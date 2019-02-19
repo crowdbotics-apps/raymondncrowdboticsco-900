@@ -194,6 +194,7 @@ class CampaignListContainer extends React.Component {
     );
   }
 }
+
 CampaignListContainer.contextType = AppContext;
 
 CampaignListContainer.propTypes = {

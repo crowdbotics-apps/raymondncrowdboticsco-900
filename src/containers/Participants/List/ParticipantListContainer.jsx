@@ -1,12 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { ParticipantsController } from 'controllers';
 import Pagination from 'react-js-pagination';
 import Switch from 'react-switch';
+
+import { AppContext } from 'components';
+import { ParticipantsController } from 'controllers';
+
 import styles from './ParticipantListContainer.module.scss';
 
 var _ = require('lodash');
+
 class ParticipantListContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -33,8 +36,9 @@ class ParticipantListContainer extends React.Component {
   }
 
   reload = async () => {
+    this.context.showLoading();
     let data = await ParticipantsController.getParticipants();
-
+    this.context.hideLoading();
     return this.setState({ data });
   };
 
@@ -194,6 +198,8 @@ class ParticipantListContainer extends React.Component {
     );
   }
 }
+
+ParticipantListContainer.contextType = AppContext;
 
 ParticipantListContainer.propTypes = {
   history: PropTypes.object
