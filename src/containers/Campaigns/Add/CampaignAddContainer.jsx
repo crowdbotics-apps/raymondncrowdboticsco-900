@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import uuid from 'uuid/v4';
 
-import styles from './CampaignAddContainer.module.scss';
+import { ClientController, CampaignController } from 'controllers';
+import QuestionType from '../../../constants/questionType';
 
-const QuestionType = {
-  OPEN_TEXT_QUESTION: 0,
-  TRUE_FALSE: 1,
-  MULTIPLE_SELECTION: 2
-};
+import styles from './CampaignAddContainer.module.scss';
 
 class CampaignAddContainer extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      clients: [],
+      participant_groups: [],
+      // campaign data
       basic: {
         name: '',
         marketing_name: '',
@@ -36,6 +36,23 @@ class CampaignAddContainer extends React.Component {
     this.videos = {};
   }
 
+  async componentDidMount() {
+    let { basic } = this.state;
+
+    let clients = await ClientController.getClients();
+    let participant_groups = await ClientController.getParticipantGroups();
+    basic.org = clients[0].id;
+    basic.contact = clients[0].contact;
+    basic.participant_group = participant_groups[0].id;
+    basic.location = participant_groups[0].division;
+
+    this.setState({
+      clients,
+      participant_groups,
+      basic
+    });
+  }
+
   generateNewQuestion = () => {
     return {
       id: uuid(),
@@ -46,7 +63,60 @@ class CampaignAddContainer extends React.Component {
     };
   };
 
-  addClicked = () => {};
+  addClicked = () => {
+    // validation for basic info
+    let { basic, questions } = this.state;
+    basic['description'] = this.description.innerHTML;
+
+    if (!basic.name) {
+      alert('Name is empty or invalid!');
+      return;
+    }
+    if (!basic.marketing_name) {
+      alert('Marketing Name is empty or invalid!');
+      return;
+    }
+    if (!basic.org) {
+      alert('Please select Organization!');
+      return;
+    }
+    if (!basic.participant_group) {
+      alert('Please select Participant Group!');
+      return;
+    }
+    if (parseInt(basic.total_points) <= 0) {
+      alert('Total point is not valid!');
+      return;
+    }
+    if (!basic.description) {
+      alert('Description is empty or invalid!');
+      return;
+    }
+
+    // validation for questions
+    for (var i = 0; i < questions.length; i++) {
+      if (!questions[i].question) {
+        alert(`Question${i + 1}'s Question Text is empty or invalid!`);
+        return;
+      }
+      if (questions[i].type === QuestionType.MULTIPLE_SELECTION) {
+        for (let j = 0; j < questions[i].answers.length; j++) {
+          if (!questions[i].answers[j]) {
+            alert(`Question${i + 1}'s Question Answers are not completed!`);
+            return;
+          }
+        }
+      }
+    }
+
+    // adding a campaign
+    console.log(this.state.questions);
+
+    // CampaignController.addCampaign({
+    //   basic: this.state.basic,
+    //   questions: this.state.questions
+    // });
+  };
 
   cancelClicked = () => {
     this.props.history.goBack();
@@ -55,6 +125,17 @@ class CampaignAddContainer extends React.Component {
   basicInfoChanged = key => e => {
     let { basic } = this.state;
     basic[key] = e.target.value;
+    if (key === 'participant_group') {
+      let index = this.state.participant_groups.findIndex(
+        group => group.id === e.target.value
+      );
+      basic['location'] = this.state.participant_groups[index].division;
+    } else if (key === 'org') {
+      let index = this.state.clients.findIndex(
+        client => client.id === e.target.value
+      );
+      basic['contact'] = this.state.clients[index].contact;
+    }
     this.setState({ basic });
   };
 
@@ -63,6 +144,8 @@ class CampaignAddContainer extends React.Component {
     questions[index].type = qtype;
     if (qtype === QuestionType.MULTIPLE_SELECTION) {
       questions[index].answers = [''];
+    } else {
+      questions[index].answers = [];
     }
     this.setState({ questions });
   };
@@ -80,10 +163,22 @@ class CampaignAddContainer extends React.Component {
     }
   };
 
+  questionChanged = (key, index) => e => {
+    let { questions } = this.state;
+    questions[index][key] = e.target.value;
+    this.setState({ questions });
+  };
+
   addAnswer = index => () => {
     // multiple option
     let { questions } = this.state;
     questions[index].answers.push('');
+    this.setState({ questions });
+  };
+
+  removeAnswer = (questionIndex, answerIndex) => () => {
+    let { questions } = this.state;
+    questions[questionIndex].answers.splice(answerIndex, 1);
     this.setState({ questions });
   };
 
@@ -93,10 +188,46 @@ class CampaignAddContainer extends React.Component {
     this.setState({ questions });
   };
 
+  addQuestion = () => {
+    let { questions } = this.state;
+    // question validation
+    const last = questions[questions.length - 1];
+    if (!last.question) {
+      alert('Question Text is empty or invalid!');
+      return;
+    }
+    if (last.type === QuestionType.MULTIPLE_SELECTION) {
+      for (let i = 0; i < last.answers.length; i++) {
+        if (!last.answers[i]) {
+          alert('Question Answer can\'t be empty');
+          return;
+        }
+      }
+    }
+    questions.push(this.generateNewQuestion());
+    this.setState({ questions });
+  };
+
+  removeQuestion = index => () => {
+    if (window.confirm('Are you sure to remove?')) {
+      let { questions } = this.state;
+      questions.splice(index, 1);
+      this.setState({ questions });
+    }
+  };
+
   renderQuestion = (question, index) => {
     return (
       <div key={`${index}`} className={styles.questionContainer}>
-        <h2> Question {index + 1} </h2>
+        <div className={styles.title}>
+          <h2> Question {index + 1} </h2>
+          {this.state.questions.length > 1 && (
+            <span onClick={this.removeQuestion(index)}>
+              <i className='fa fa-minus-circle' />
+            </span>
+          )}
+        </div>
+
         <div className={styles.qtypeContainer}>
           <div
             className={styles.qtypeRadio}
@@ -107,8 +238,7 @@ class CampaignAddContainer extends React.Component {
           >
             <input
               type='radio'
-              name='open'
-              value='open'
+              value={`open${index}`}
               checked={question.type === QuestionType.OPEN_TEXT_QUESTION}
               onChange={this.selectQuestonType(
                 QuestionType.OPEN_TEXT_QUESTION,
@@ -123,8 +253,7 @@ class CampaignAddContainer extends React.Component {
           >
             <input
               type='radio'
-              name='truefalse'
-              value='truefalse'
+              value={`truefalse${index}`}
               checked={question.type === QuestionType.TRUE_FALSE}
               onChange={this.selectQuestonType(QuestionType.TRUE_FALSE, index)}
             />
@@ -139,8 +268,7 @@ class CampaignAddContainer extends React.Component {
           >
             <input
               type='radio'
-              name='multiple'
-              value='multiple'
+              value={`multiple${index}`}
               checked={question.type === QuestionType.MULTIPLE_SELECTION}
               onChange={this.selectQuestonType(
                 QuestionType.MULTIPLE_SELECTION,
@@ -152,7 +280,11 @@ class CampaignAddContainer extends React.Component {
         </div>
         <div className={styles.inputItem}>
           <span>Question Text</span>
-          <input placeholder='Type Question here' />
+          <input
+            placeholder='Type Question here'
+            value={question.question}
+            onChange={this.questionChanged('question', index)}
+          />
         </div>
         <div className={styles.medias}>
           <div className={styles.mediaContainer}>
@@ -162,7 +294,7 @@ class CampaignAddContainer extends React.Component {
                 className={styles.btnUpload}
                 onClick={this.uploadClicked(question.id)}
               >
-                Upload CSV
+                Upload Image/Video
               </div>
               {question.media ? (
                 <div>
@@ -200,8 +332,12 @@ class CampaignAddContainer extends React.Component {
             <div className={styles.answerContainer}>
               <span>Answers</span>
               <div>
-                <input value='True' disabled />
-                <input value='False' disabled />
+                <div className={styles.answerItem}>
+                  <input value='True' disabled />
+                </div>
+                <div className={styles.answerItem}>
+                  <input value='False' disabled />
+                </div>
               </div>
             </div>
           )}
@@ -210,12 +346,18 @@ class CampaignAddContainer extends React.Component {
               <span>Answers</span>
               <div>
                 {question.answers.map((answer, answerIndex) => (
-                  <input
-                    key={`${answerIndex}`}
-                    placeholder='Type answer here'
-                    value={answer}
-                    onChange={this.answerChanged(index, answerIndex)}
-                  />
+                  <div key={`${answerIndex}`} className={styles.answerItem}>
+                    <input
+                      placeholder='Type answer here'
+                      value={answer}
+                      onChange={this.answerChanged(index, answerIndex)}
+                    />
+                    {question.answers.length > 1 && (
+                      <span onClick={this.removeAnswer(index, answerIndex)}>
+                        <i className='fa fa-minus-circle' />
+                      </span>
+                    )}
+                  </div>
                 ))}
                 <div className={styles.btnAdd} onClick={this.addAnswer(index)}>
                   <i className='fa fa-plus' />
@@ -225,6 +367,11 @@ class CampaignAddContainer extends React.Component {
             </div>
           )}
         </div>
+        {index === this.state.questions.length - 1 && (
+          <div className={styles.btnAddMore} onClick={this.addQuestion}>
+            Add More Question
+          </div>
+        )}
       </div>
     );
   };
@@ -266,18 +413,22 @@ class CampaignAddContainer extends React.Component {
               <td>
                 <div className={styles.inputItem}>
                   <span>Organization</span>
-                  <select>
-                    <option value='volvo'>Volvo</option>
-                    <option value='saab'>Saab</option>
-                    <option value='volvo'>Volvo</option>
-                    <option value='saab'>Saab</option>
+                  <select
+                    value={this.state.basic['org']}
+                    onChange={this.basicInfoChanged('org')}
+                  >
+                    {this.state.clients.map(client => (
+                      <option key={client.id} value={client.id}>
+                        {client.org}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </td>
               <td>
                 <div className={styles.inputItem}>
                   <span>Contact</span>
-                  <input disabled />
+                  <input disabled value={this.state.basic['contact']} />
                 </div>
               </td>
             </tr>
@@ -307,18 +458,22 @@ class CampaignAddContainer extends React.Component {
               <td>
                 <div className={styles.inputItem}>
                   <span>Participant Group</span>
-                  <select>
-                    <option value='volvo'>Volvo</option>
-                    <option value='saab'>Saab</option>
-                    <option value='volvo'>Volvo</option>
-                    <option value='saab'>Saab</option>
+                  <select
+                    value={this.state.basic['participant_group']}
+                    onChange={this.basicInfoChanged('participant_group')}
+                  >
+                    {this.state.participant_groups.map(group => (
+                      <option key={group.id} value={group.id}>
+                        {group.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </td>
               <td>
                 <div className={styles.inputItem}>
                   <span>Location</span>
-                  <input disabled />
+                  <input disabled value={this.state.basic['location']} />
                 </div>
               </td>
             </tr>
@@ -326,13 +481,20 @@ class CampaignAddContainer extends React.Component {
               <td>
                 <div className={styles.inputItem}>
                   <span>Total Points</span>
-                  <input />
+                  <input
+                    value={this.state.basic['total_points']}
+                    onChange={this.basicInfoChanged('total_points')}
+                  />
                 </div>
               </td>
               <td>
                 <div className={styles.textareaItem}>
                   <span>Description</span>
-                  <div className={styles.textContainer} contentEditable />
+                  <div
+                    ref={ref => (this.description = ref)}
+                    className={styles.textContainer}
+                    contentEditable
+                  />
                 </div>
               </td>
             </tr>

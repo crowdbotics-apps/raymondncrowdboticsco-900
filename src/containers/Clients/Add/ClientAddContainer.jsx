@@ -50,7 +50,7 @@ class ClientAddContainer extends React.Component {
     let { groups } = this.state;
 
     let last = groups[groups.length - 1];
-    if (!last.name || !last.division || !last.number_of_participants) {
+    if (!last.name || !last.division) {
       alert('Please complete the current participant group to add more.');
       return;
     }
@@ -124,7 +124,7 @@ class ClientAddContainer extends React.Component {
               <h2>Participant Group</h2>
               {this.state.groups.length > 1 && (
                 <span onClick={this.groupRemove(index)}>
-                  <i className={`fa fa-times-circle-o ${styles.iconRemove}`} />
+                  <i className={`fa fa-minus-circle ${styles.iconRemove}`} />
                 </span>
               )}
             </div>

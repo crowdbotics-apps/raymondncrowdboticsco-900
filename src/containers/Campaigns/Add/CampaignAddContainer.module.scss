@@ -93,6 +93,20 @@
     padding: 20px;
     margin-bottom: 20px;
 
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      i {
+        font-size: 32px;
+        color: $danger;
+
+        &:active {
+          opacity: 0.5;
+        }
+      }
+    }
     .qtypeContainer {
       display: flex;
       align-items: center;
@@ -158,7 +172,7 @@
         }
 
         .btnUpload {
-          width: 200px;
+          width: 250px;
           height: 40px;
           border-radius: 1px;
           font-size: 16px;
@@ -182,7 +196,7 @@
         }
 
         .media {
-          width: 200px;
+          width: 250px;
           margin-top: 10px;
         }
 
@@ -209,19 +223,36 @@
 
       div {
         flex: 1;
-        display: flex;
-        flex-direction: column;
 
-        input {
-          flex: 1;
-          height: 40px;
-          font-size: 16px;
-          padding: 0 20px;
-          border: 1px solid $light-grey;
-          margin-bottom: 10px;
+        .answerItem {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
 
-          &:disabled {
-            background-color: #eeeeee;
+          input {
+            flex: 1;
+            height: 40px;
+            font-size: 16px;
+            padding: 0 20px;
+            border: 1px solid $light-grey;
+            margin-bottom: 10px;
+
+            &:disabled {
+              background-color: #eeeeee;
+            }
+          }
+          span {
+            width: 30px;
+            margin: 0 5px 10px 5px;
+            text-align: right;
+            i {
+              font-size: 24px;
+              color: $danger;
+
+              &:active {
+                opacity: 0.5;
+              }
+            }
           }
         }
 

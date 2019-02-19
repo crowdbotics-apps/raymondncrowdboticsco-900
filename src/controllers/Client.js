@@ -146,3 +146,15 @@ export const getClients = async () => {
     throw error;
   }
 };
+
+export const getParticipantGroups = async () => {
+  let groupCollection = Firestore.collection('participant_groups');
+  try {
+    let snapshot = await groupCollection.get();
+    let tasks = snapshot.docs.map(groupDoc => groupDoc.data());
+    let participant_groups = Promise.all(tasks);
+    return participant_groups;
+  } catch (error) {
+    throw error;
+  }
+};
