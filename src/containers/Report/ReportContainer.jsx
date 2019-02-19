@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { ButtonToolbar, Button } from 'react-bootstrap';
 import Checkbox from 'rc-checkbox';
 import 'rc-checkbox/assets/index.css';
-
+import { AppContext } from 'components';
 import { ReportController, ClientController } from 'controllers';
 import styles from './ReportContainer.module.scss';
 
@@ -30,56 +30,7 @@ class ReportContainer extends React.Component {
 
     this.state = {
       orgSelected: null,
-      filterSelected: null,
-      bulkActionSelected: null,
-      loading: true,
-      data: [
-        {
-          id: 1,
-          checked: false,
-          category: 'Greetings',
-          campaign: 'Buddy activity',
-          completions: '10 out of 50',
-          employee_group: 'Cashiers',
-          division: 'Macon'
-        },
-        {
-          id: 2,
-          checked: false,
-          category: 'Greetings',
-          campaign: 'Buddy activity',
-          completions: '10 out of 50',
-          employee_group: 'Cashiers',
-          division: 'Macon'
-        },
-        {
-          id: 3,
-          checked: false,
-          category: 'Greetings',
-          campaign: 'Buddy activity',
-          completions: '10 out of 50',
-          employee_group: 'Cashiers',
-          division: 'Macon'
-        },
-        {
-          id: 4,
-          checked: false,
-          category: 'Greetings',
-          campaign: 'Buddy activity',
-          completions: '10 out of 50',
-          employee_group: 'Cashiers',
-          division: 'Macon'
-        },
-        {
-          id: 5,
-          checked: false,
-          category: 'Greetings',
-          campaign: 'Buddy activity',
-          completions: '10 out of 50',
-          employee_group: 'Cashiers',
-          division: 'Macon'
-        }
-      ]
+      loading: true
     };
   }
 
@@ -94,22 +45,13 @@ class ReportContainer extends React.Component {
     await this.setState({ campaigns: filterCampaings });
   };
 
-  // handleFilterChange = filterSelected => {
-  //   this.setState({ filterSelected });
-  //   console.log('Option selected:', filterSelected);
-  // };
-
-  // handlebulkActionChange = bulkActionSelected => {
-  //   this.setState({ bulkActionSelected });
-  //   console.log('Option selected:', bulkActionSelected);
-  // };
-
   async componentDidMount() {
     await this.reload();
   }
 
   reload = async () => {
     await this.setState({ loading: true });
+    this.context.showLoading();
     let orgs = await ClientController.getClients();
     let orgList = [];
 
@@ -126,14 +68,16 @@ class ReportContainer extends React.Component {
     await this.setState({ orgList });
 
     await this.getCampaigns();
+    this.context.hideLoading();
     this.setState({ loading: false });
   };
 
   async getCampaigns() {
+    this.context.showLoading();
     await this.setState({ loading: true });
     let campaigns = await ReportController.getCampaigns();
     await this.setState({ campaigns });
-    console.log(campaigns);
+    this.context.hideLoading();
     await this.setState({ loading: false });
   }
 
@@ -205,26 +149,6 @@ class ReportContainer extends React.Component {
             />
           </div>
         </div>
-        {/* <div className={styles.selector}>
-          <span>Market filter By:</span>
-          <div className={styles.select}>
-            <Select
-              value={filterSelected}
-              onChange={this.handleFilterChange}
-              options={options}
-            />
-          </div>
-        </div>
-        <div className={styles.selector}>
-          <span>Bulk Action:</span>
-          <div className={styles.select}>
-            <Select
-              value={bulkActionSelected}
-              onChange={this.handlebulkActionChange}
-              options={options}
-            />
-          </div>
-        </div> */}
         {!loading && campaigns.length ? (
           <table>
             <thead>
@@ -249,19 +173,14 @@ class ReportContainer extends React.Component {
             >
               Download data file
             </Button>
-            {/* <Button
-              variant='primary'
-              size='md'
-              onClick={() => this.downloadMedia()}
-            >
-              Download Media
-            </Button> */}
           </ButtonToolbar>
         </div>
       </div>
     );
   }
 }
+
+ReportContainer.contextType = AppContext;
 
 ReportContainer.propTypes = {
   history: PropTypes.object
