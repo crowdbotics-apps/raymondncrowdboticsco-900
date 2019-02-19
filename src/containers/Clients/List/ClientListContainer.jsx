@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { AppContext } from 'components';
 import { ClientController } from 'controllers';
 import styles from './ClientListContainer.module.scss';
 
@@ -30,6 +31,8 @@ class ClientListContainer extends React.Component {
   }
 
   reload = async () => {
+    this.context.showLoading();
+
     let data = await ClientController.getClients();
 
     data = data
@@ -50,6 +53,7 @@ class ClientListContainer extends React.Component {
     this.setState({
       data
     });
+    this.context.hideLoading();
   };
 
   addClicked = () => {
@@ -161,6 +165,8 @@ class ClientListContainer extends React.Component {
     );
   }
 }
+
+ClientListContainer.contextType = AppContext;
 
 ClientListContainer.propTypes = {
   history: PropTypes.object
