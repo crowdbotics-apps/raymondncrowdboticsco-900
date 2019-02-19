@@ -8,7 +8,8 @@ export const addClient = async payload => {
       let participant_list = group.participant_list.map(participant => {
         return {
           name: participant[0],
-          email: participant[1]
+          email: participant[1],
+          status: true
         };
       });
       groupIds.push(groupDoc.id);

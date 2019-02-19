@@ -2,14 +2,23 @@ import React from 'react';
 import cn from 'classnames';
 import { Link, Switch, Route, Redirect } from 'react-router-dom';
 
+// clients
 import ClientListContainer from 'containers/Clients/List';
 import ClientAddContainer from 'containers/Clients/Add';
 import ClientEditContainer from 'containers/Clients/Edit';
+
+// campaigns
 import CampaignListContainer from 'containers/Campaigns/List';
+import CampaignAddContainer from 'containers/Campaigns/Add';
+
+//report
 import ReportContainer from 'containers/Report';
+
+//participants
 import ParticipantListContainer from 'containers/Participants/List';
 
 import styles from './Router.module.scss';
+
 
 class Router extends React.Component {
   render() {
@@ -72,6 +81,7 @@ class Router extends React.Component {
               <Route path='/clients/add' component={ClientAddContainer} />
               <Route path='/clients/edit/:id' component={ClientEditContainer} />
               <Route path='/clients' component={ClientListContainer} />
+              <Route path='/campaigns/add' component={CampaignAddContainer} />
               <Route path='/campaigns' component={CampaignListContainer} />
               <Route path='/report' component={ReportContainer} />
               <Route

@@ -24,7 +24,9 @@ class CampaignListContainer extends React.Component {
     };
   }
 
-  addClicked = () => {};
+  addClicked = () => {
+    this.props.history.push('/campaigns/add');
+  };
 
   render() {
     return (
