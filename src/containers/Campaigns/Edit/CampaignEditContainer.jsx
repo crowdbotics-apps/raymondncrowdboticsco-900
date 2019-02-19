@@ -7,13 +7,14 @@ import { AppContext } from 'components';
 import { ClientController, CampaignController } from 'controllers';
 import QuestionType from '../../../constants/questionType';
 
-import styles from './CampaignAddContainer.module.scss';
+import styles from './CampaignEditContainer.module.scss';
 
-class CampaignAddContainer extends React.Component {
+class CampaignEditContainer extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      campaignId: props.match.params.id,
       clients: [],
       participant_groups: [],
       // campaign data
@@ -27,7 +28,8 @@ class CampaignAddContainer extends React.Component {
         participant_group: '',
         location: '',
         total_points: 0,
-        description: ''
+        description: '',
+        status: 'active'
       },
       questions: [this.generateNewQuestion()]
     };
@@ -36,20 +38,47 @@ class CampaignAddContainer extends React.Component {
   }
 
   async componentDidMount() {
-    let { basic } = this.state;
+    this.context.showLoading();
 
     let clients = await ClientController.getClients();
     let participant_groups = await ClientController.getParticipantGroups();
-    basic.org = clients[0].id;
-    basic.contact = clients[0].contact;
-    basic.participant_group = participant_groups[0].id;
-    basic.location = participant_groups[0].division;
 
+    let { basic, questions } = this.state;
+    let data = await CampaignController.getCampaignById(this.state.campaignId);
+    // setting basic info
+    basic.name = data.name;
+    basic.marketing_name = data.marketing_name;
+    basic.org = data.client_id;
+    let index = clients.findIndex(client => client.id === data.client_id);
+    if (index > -1) {
+      basic.contact = clients[index].contact;
+    }
+    basic.from = data.from;
+    basic.to = data.to;
+    basic.participant_group = data.participant_group_id;
+    index = participant_groups.findIndex(
+      group => group.id === data.participant_group_id
+    );
+    if (index > -1) {
+      basic.location = participant_groups[index].division;
+    }
+    basic.total_points = data.total_points;
+    basic.description = data.description;
+    basic.status = data.status;
+
+    // setting questions
+    questions = data.questions.map(question => ({
+      id: uuid(),
+      ...question
+    }));
     this.setState({
       clients,
       participant_groups,
-      basic
+      basic,
+      questions
     });
+
+    this.context.hideLoading();
   }
 
   generateNewQuestion = () => {
@@ -62,12 +91,12 @@ class CampaignAddContainer extends React.Component {
     };
   };
 
-  addClicked = async () => {
-    this.context.showLoading();
+  updateClicked = async () => {
     // validation for basic info
     let { basic, questions } = this.state;
     basic['description'] = this.description.innerHTML;
 
+    this.context.showLoading();
     if (!basic.name) {
       alert('Name is empty or invalid!');
       return;
@@ -109,14 +138,19 @@ class CampaignAddContainer extends React.Component {
       }
     }
 
-    // adding a campaign
+    // updating a campaign
+    try {
+      await CampaignController.updateCampaign({
+        campaignId: this.state.campaignId,
+        basic: this.state.basic,
+        questions: this.state.questions
+      });
+      this.props.history.goBack();
+    } catch (error) {
+      alert(error.message);
+    }
 
-    await CampaignController.addCampaign({
-      basic: this.state.basic,
-      questions: this.state.questions
-    });
     this.context.hideLoading();
-    this.props.history.goBack();
   };
 
   cancelClicked = () => {
@@ -298,21 +332,36 @@ class CampaignAddContainer extends React.Component {
                 Upload Image/Video
               </div>
               {question.media ? (
-                <div>
-                  {question.media.type.includes('image/') ? (
-                    <img
-                      className={styles.media}
-                      src={URL.createObjectURL(question.media)}
-                    />
-                  ) : (
-                    <video
-                      width='200'
-                      controls
-                      className={styles.media}
-                      src={URL.createObjectURL(question.media)}
-                    />
-                  )}
-                </div>
+                question.media.type ? (
+                  <div>
+                    {question.media.type.includes('image/') ? (
+                      <img
+                        className={styles.media}
+                        src={URL.createObjectURL(question.media)}
+                      />
+                    ) : (
+                      <video
+                        width='200'
+                        controls
+                        className={styles.media}
+                        src={URL.createObjectURL(question.media)}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    {question.media_type.includes('image/') ? (
+                      <img className={styles.media} src={question.media} />
+                    ) : (
+                      <video
+                        width='200'
+                        controls
+                        className={styles.media}
+                        src={question.media}
+                      />
+                    )}
+                  </div>
+                )
               ) : (
                 <div className={styles.nomedia}>
                   No image or video is uploaded
@@ -380,7 +429,7 @@ class CampaignAddContainer extends React.Component {
   render() {
     return (
       <div className={styles.wrapper}>
-        <h1> Add a new campaign </h1>
+        <h1> Edit campaign </h1>
         <table>
           <thead>
             <tr>
@@ -495,6 +544,9 @@ class CampaignAddContainer extends React.Component {
                     ref={ref => (this.description = ref)}
                     className={styles.textContainer}
                     contentEditable
+                    dangerouslySetInnerHTML={{
+                      __html: this.state.basic['description']
+                    }}
                   />
                 </div>
               </td>
@@ -505,8 +557,8 @@ class CampaignAddContainer extends React.Component {
           this.renderQuestion(question, index)
         )}
         <div className={styles.btnGroup}>
-          <div className={styles.btnSave} onClick={this.addClicked}>
-            Add
+          <div className={styles.btnSave} onClick={this.updateClicked}>
+            Update
           </div>
           <div className={styles.btnCancel} onClick={this.cancelClicked}>
             Cancel
@@ -517,10 +569,10 @@ class CampaignAddContainer extends React.Component {
   }
 }
 
-CampaignAddContainer.contextType = AppContext;
+CampaignEditContainer.contextType = AppContext;
 
-CampaignAddContainer.propTypes = {
+CampaignEditContainer.propTypes = {
   history: PropTypes.object
 };
 
-export default CampaignAddContainer;
+export default CampaignEditContainer;

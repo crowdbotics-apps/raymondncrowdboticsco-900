@@ -10,6 +10,7 @@ import ClientEditContainer from 'containers/Clients/Edit';
 // campaigns
 import CampaignListContainer from 'containers/Campaigns/List';
 import CampaignAddContainer from 'containers/Campaigns/Add';
+import CampaignEditContainer from 'containers/Campaigns/Edit';
 
 //report
 import ReportContainer from 'containers/Report';
@@ -18,7 +19,6 @@ import ReportContainer from 'containers/Report';
 import ParticipantListContainer from 'containers/Participants/List';
 
 import styles from './Router.module.scss';
-
 
 class Router extends React.Component {
   render() {
@@ -82,6 +82,10 @@ class Router extends React.Component {
               <Route path='/clients/edit/:id' component={ClientEditContainer} />
               <Route path='/clients' component={ClientListContainer} />
               <Route path='/campaigns/add' component={CampaignAddContainer} />
+              <Route
+                path='/campaigns/edit/:id'
+                component={CampaignEditContainer}
+              />
               <Route path='/campaigns' component={CampaignListContainer} />
               <Route path='/report' component={ReportContainer} />
               <Route

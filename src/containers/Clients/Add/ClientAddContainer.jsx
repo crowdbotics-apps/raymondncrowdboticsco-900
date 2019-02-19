@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Papa from 'papaparse';
 import uuid from 'uuid/v4';
 
+import { AppContext } from 'components';
 import { ClientController } from 'controllers';
 
 import styles from './ClientAddContainer.module.scss';
@@ -33,6 +34,7 @@ class ClientAddContainer extends React.Component {
   };
 
   addClicked = async () => {
+    this.context.showLoading();
     try {
       await ClientController.addClient(this.state);
       alert('A new client is added.');
@@ -40,6 +42,7 @@ class ClientAddContainer extends React.Component {
     } catch (error) {
       alert(error.message);
     }
+    this.context.hideLoading();
   };
 
   cancelClicked = () => {
@@ -199,6 +202,8 @@ class ClientAddContainer extends React.Component {
     );
   }
 }
+
+ClientAddContainer.contextType = AppContext;
 
 ClientAddContainer.propTypes = {
   history: PropTypes.object

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { AppContext } from 'components';
 import { CampaignController } from 'controllers';
 import styles from './CampaignListContainer.module.scss';
 
@@ -32,6 +33,8 @@ class CampaignListContainer extends React.Component {
   }
 
   reload = async () => {
+    this.context.showLoading();
+
     let data = await CampaignController.getCampaigns();
     if (this.state.filter === 'name') {
       data = data.filter(campaign =>
@@ -47,6 +50,8 @@ class CampaignListContainer extends React.Component {
     this.setState({
       data
     });
+
+    this.context.hideLoading();
   };
 
   searchfilterChanged = filter => () => {
@@ -59,14 +64,20 @@ class CampaignListContainer extends React.Component {
     this.props.history.push('/campaigns/add');
   };
 
-  editClicked = id => () => {};
+  editClicked = campaignId => () => {
+    this.props.history.push(`/campaigns/edit/${campaignId}`);
+  };
 
   activateClicked = id => async () => {
-    await CampaignController.activateCampaign(id);
+    if (window.confirm('Do you want to activate this campaign?')) {
+      await CampaignController.activateCampaign(id);
+    }
   };
 
   deactivateClicked = id => async () => {
-    await CampaignController.deactivateCampaign(id);
+    if (window.confirm('Do you want to deactivate this campaign?')) {
+      await CampaignController.deactivateCampaign(id);
+    }
   };
 
   searchInputChanged = e => {
@@ -183,6 +194,7 @@ class CampaignListContainer extends React.Component {
     );
   }
 }
+CampaignListContainer.contextType = AppContext;
 
 CampaignListContainer.propTypes = {
   history: PropTypes.object

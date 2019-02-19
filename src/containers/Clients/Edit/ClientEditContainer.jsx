@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Papa from 'papaparse';
 import uuid from 'uuid/v4';
 
+import { AppContext } from 'components';
 import { ClientController } from 'controllers';
 
 import styles from './ClientEditContainer.module.scss';
@@ -24,6 +25,7 @@ class ClientEditContainer extends React.Component {
   }
 
   async componentDidMount() {
+    this.context.showLoading();
     let data = await ClientController.getClientById(this.state.clientId);
     let groups = data.participant_groups.map(group => {
       let item = { ...group };
@@ -41,6 +43,7 @@ class ClientEditContainer extends React.Component {
       },
       groups
     });
+    this.context.hideLoading();
   }
 
   generateNewGroup = () => {
@@ -55,6 +58,7 @@ class ClientEditContainer extends React.Component {
   };
 
   updateClicked = async () => {
+    this.context.showLoading();
     try {
       await ClientController.updateClient(this.state);
       alert('This client is updated.');
@@ -62,6 +66,7 @@ class ClientEditContainer extends React.Component {
     } catch (error) {
       alert(error.message);
     }
+    this.context.hideLoading();
   };
 
   cancelClicked = () => {
@@ -221,6 +226,8 @@ class ClientEditContainer extends React.Component {
     );
   }
 }
+
+ClientEditContainer.contextType = AppContext;
 
 ClientEditContainer.propTypes = {
   history: PropTypes.object,
