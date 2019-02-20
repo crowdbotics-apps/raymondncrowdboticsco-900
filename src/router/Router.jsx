@@ -12,6 +12,9 @@ import CampaignListContainer from 'containers/Campaigns/List';
 import CampaignAddContainer from 'containers/Campaigns/Add';
 import CampaignEditContainer from 'containers/Campaigns/Edit';
 
+// campaign details
+import CampaignReportContainer from 'containers/CampaignReport/List';
+
 //report
 import ReportContainer from 'containers/Report';
 
@@ -27,10 +30,12 @@ class Router extends React.Component {
       selectedMenuItem = 0;
     } else if (window.location.pathname.startsWith('/campaigns')) {
       selectedMenuItem = 1;
-    } else if (window.location.pathname.startsWith('/report')) {
+    } else if (window.location.pathname.startsWith('/campaign-report')) {
       selectedMenuItem = 2;
-    } else if (window.location.pathname.startsWith('/participants')) {
+    } else if (window.location.pathname.startsWith('/report')) {
       selectedMenuItem = 3;
+    } else if (window.location.pathname.startsWith('/participants')) {
+      selectedMenuItem = 4;
     } else {
       selectedMenuItem = 0; // default
     }
@@ -58,10 +63,19 @@ class Router extends React.Component {
               Campaigns
             </Link>
             <Link
-              to='/report'
+              to='/campaign-report'
               className={cn(
                 styles.menuitem,
                 selectedMenuItem === 2 && styles['menuitem-selected']
+              )}
+            >
+              Campaign Report
+            </Link>
+            <Link
+              to='/report'
+              className={cn(
+                styles.menuitem,
+                selectedMenuItem === 3 && styles['menuitem-selected']
               )}
             >
               Reporting
@@ -70,7 +84,7 @@ class Router extends React.Component {
               to='/participants'
               className={cn(
                 styles.menuitem,
-                selectedMenuItem === 3 && styles['menuitem-selected']
+                selectedMenuItem === 4 && styles['menuitem-selected']
               )}
             >
               Participants
@@ -88,6 +102,10 @@ class Router extends React.Component {
               />
               <Route path='/campaigns' component={CampaignListContainer} />
               <Route path='/report' component={ReportContainer} />
+              <Route
+                path='/campaign-report'
+                component={CampaignReportContainer}
+              />
               <Route
                 path='/participants'
                 component={ParticipantListContainer}
