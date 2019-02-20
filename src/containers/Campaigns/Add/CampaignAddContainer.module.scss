@@ -74,18 +74,21 @@
       }
     }
 
-    select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-
+    .select {
       height: 40px;
       flex: 1;
-      box-sizing: content-box;
-      padding: 0 20px;
+      span {
+        width: 0px;
+        background-color: #ffffff;
+      }
+    }
+
+    .datepicker {
+      flex: 1;
+      height: 40px;
       font-size: 16px;
+      padding: 0 20px;
       border: 1px solid $light-grey;
-      border-radius: 1px;
-      background-color: $white;
     }
   }
 

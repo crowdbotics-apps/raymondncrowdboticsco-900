@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import Select from 'react-select';
+import DatePicker from 'react-datepicker';
 import uuid from 'uuid/v4';
 
 import { AppContext } from 'components';
@@ -8,6 +9,9 @@ import { ClientController, CampaignController } from 'controllers';
 import QuestionType from '../../../constants/questionType';
 
 import styles from './CampaignEditContainer.module.scss';
+import 'react-datepicker/dist/react-datepicker.css';
+
+import selectStyles from '../Add/select.styles';
 
 class CampaignEditContainer extends React.Component {
   constructor(props) {
@@ -17,14 +21,18 @@ class CampaignEditContainer extends React.Component {
       campaignId: props.match.params.id,
       clients: [],
       participant_groups: [],
+      orgList: [],
+      groupList: [],
+      selectedOrg: {},
+      selectedGroup: {},
       // campaign data
       basic: {
         name: '',
         marketing_name: '',
         org: '',
         contact: '',
-        from: moment().format('YYYY-MM-DD'),
-        to: moment().format('YYYY-MM-DD'),
+        from: new Date(),
+        to: new Date(),
         participant_group: '',
         location: '',
         total_points: 0,
@@ -42,6 +50,14 @@ class CampaignEditContainer extends React.Component {
 
     let clients = await ClientController.getClients();
     let participant_groups = await ClientController.getParticipantGroups();
+    let orgList = clients.map(client => ({
+      value: client.id,
+      label: client.org
+    }));
+    let groupList = participant_groups.map(group => ({
+      value: group.id,
+      label: group.name
+    }));
 
     let { basic, questions } = this.state;
     let data = await CampaignController.getCampaignById(this.state.campaignId);
@@ -53,8 +69,10 @@ class CampaignEditContainer extends React.Component {
     if (index > -1) {
       basic.contact = clients[index].contact;
     }
-    basic.from = data.from;
-    basic.to = data.to;
+    let selectedOrg = orgList[index];
+
+    basic.from = new Date(data.from);
+    basic.to = new Date(data.to);
     basic.participant_group = data.participant_group_id;
     index = participant_groups.findIndex(
       group => group.id === data.participant_group_id
@@ -62,6 +80,8 @@ class CampaignEditContainer extends React.Component {
     if (index > -1) {
       basic.location = participant_groups[index].division;
     }
+    let selectedGroup = groupList[index];
+
     basic.total_points = data.total_points;
     basic.description = data.description;
     basic.status = data.status;
@@ -71,11 +91,16 @@ class CampaignEditContainer extends React.Component {
       id: uuid(),
       ...question
     }));
+
     this.setState({
       clients,
       participant_groups,
       basic,
-      questions
+      questions,
+      orgList,
+      groupList,
+      selectedOrg,
+      selectedGroup
     });
 
     this.context.hideLoading();
@@ -128,7 +153,7 @@ class CampaignEditContainer extends React.Component {
         alert(`Question${i + 1}'s Question Text is empty or invalid!`);
         return;
       }
-      if (questions[i].type === QuestionType.MULTIPLE_SELECTION) {
+      if (questions[i].type !== QuestionType.OPEN_TEXT_QUESTION) {
         for (let j = 0; j < questions[i].answers.length; j++) {
           if (!questions[i].answers[j]) {
             alert(`Question${i + 1}'s Question Answers are not completed!`);
@@ -159,28 +184,43 @@ class CampaignEditContainer extends React.Component {
 
   basicInfoChanged = key => e => {
     let { basic } = this.state;
-    basic[key] = e.target.value;
+
     if (key === 'participant_group') {
+      let selectedGroup = e;
+      basic[key] = e.value;
       let index = this.state.participant_groups.findIndex(
-        group => group.id === e.target.value
+        group => group.id === e.value
       );
       basic['location'] = this.state.participant_groups[index].division;
+      this.setState({
+        selectedGroup,
+        basic
+      });
     } else if (key === 'org') {
-      let index = this.state.clients.findIndex(
-        client => client.id === e.target.value
-      );
+      let selectedOrg = e;
+      basic[key] = e.value;
+      let index = this.state.clients.findIndex(client => client.id === e.value);
       basic['contact'] = this.state.clients[index].contact;
+      this.setState({
+        selectedOrg,
+        basic
+      });
+    } else if (key === 'from' || key === 'to') {
+      basic[key] = e;
+      this.setState({ basic });
+    } else {
+      basic[key] = e.target.value;
+      this.setState({ basic });
     }
-    this.setState({ basic });
   };
 
   selectQuestonType = (qtype, index) => () => {
     let { questions } = this.state;
     questions[index].type = qtype;
-    if (qtype === QuestionType.MULTIPLE_SELECTION) {
-      questions[index].answers = [''];
-    } else {
+    if (qtype === QuestionType.OPEN_TEXT_QUESTION) {
       questions[index].answers = [];
+    } else {
+      questions[index].answers = [''];
     }
     this.setState({ questions });
   };
@@ -231,7 +271,7 @@ class CampaignEditContainer extends React.Component {
       alert('Question Text is empty or invalid!');
       return;
     }
-    if (last.type === QuestionType.MULTIPLE_SELECTION) {
+    if (last.type !== QuestionType.OPEN_TEXT_QUESTION) {
       for (let i = 0; i < last.answers.length; i++) {
         if (!last.answers[i]) {
           alert('Question Answer can\'t be empty');
@@ -284,33 +324,33 @@ class CampaignEditContainer extends React.Component {
           </div>
           <div
             className={styles.qtypeRadio}
-            onClick={this.selectQuestonType(QuestionType.TRUE_FALSE, index)}
+            onClick={this.selectQuestonType(QuestionType.ONE_CHOICE, index)}
           >
             <input
               type='radio'
               value={`truefalse${index}`}
-              checked={question.type === QuestionType.TRUE_FALSE}
-              onChange={this.selectQuestonType(QuestionType.TRUE_FALSE, index)}
+              checked={question.type === QuestionType.ONE_CHOICE}
+              onChange={this.selectQuestonType(QuestionType.ONE_CHOICE, index)}
             />
-            True / False
+            One Choice
           </div>
           <div
             className={styles.qtypeRadio}
             onClick={this.selectQuestonType(
-              QuestionType.MULTIPLE_SELECTION,
+              QuestionType.MULTIPLE_CHOICE,
               index
             )}
           >
             <input
               type='radio'
               value={`multiple${index}`}
-              checked={question.type === QuestionType.MULTIPLE_SELECTION}
+              checked={question.type === QuestionType.MULTIPLE_CHOICE}
               onChange={this.selectQuestonType(
-                QuestionType.MULTIPLE_SELECTION,
+                QuestionType.MULTIPLE_CHOICE,
                 index
               )}
             />
-            Poll( one or many questions )
+            Multiple Choice
           </div>
         </div>
         <div className={styles.inputItem}>
@@ -378,20 +418,7 @@ class CampaignEditContainer extends React.Component {
           </div>
         </div>
         <div className={styles.answers}>
-          {question.type === QuestionType.TRUE_FALSE && (
-            <div className={styles.answerContainer}>
-              <span>Answers</span>
-              <div>
-                <div className={styles.answerItem}>
-                  <input value='True' disabled />
-                </div>
-                <div className={styles.answerItem}>
-                  <input value='False' disabled />
-                </div>
-              </div>
-            </div>
-          )}
-          {question.type === QuestionType.MULTIPLE_SELECTION && (
+          {question.type !== QuestionType.OPEN_TEXT_QUESTION && (
             <div className={styles.answerContainer}>
               <span>Answers</span>
               <div>
@@ -463,16 +490,14 @@ class CampaignEditContainer extends React.Component {
               <td>
                 <div className={styles.inputItem}>
                   <span>Organization</span>
-                  <select
-                    value={this.state.basic['org']}
-                    onChange={this.basicInfoChanged('org')}
-                  >
-                    {this.state.clients.map(client => (
-                      <option key={client.id} value={client.id}>
-                        {client.org}
-                      </option>
-                    ))}
-                  </select>
+                  <div className={styles.select}>
+                    <Select
+                      styles={selectStyles}
+                      value={this.state.selectedOrg}
+                      onChange={this.basicInfoChanged('org')}
+                      options={this.state.orgList}
+                    />
+                  </div>
                 </div>
               </td>
               <td>
@@ -486,9 +511,9 @@ class CampaignEditContainer extends React.Component {
               <td>
                 <div className={styles.inputItem}>
                   <span>Starting Date</span>
-                  <input
-                    type='date'
-                    value={this.state.basic.from}
+                  <DatePicker
+                    className={styles.datepicker}
+                    selected={this.state.basic.from}
                     onChange={this.basicInfoChanged('from')}
                   />
                 </div>
@@ -496,9 +521,9 @@ class CampaignEditContainer extends React.Component {
               <td>
                 <div className={styles.inputItem}>
                   <span>Ending Date</span>
-                  <input
-                    type='date'
-                    value={this.state.basic.to}
+                  <DatePicker
+                    className={styles.datepicker}
+                    selected={this.state.basic.to}
                     onChange={this.basicInfoChanged('to')}
                   />
                 </div>
@@ -508,16 +533,14 @@ class CampaignEditContainer extends React.Component {
               <td>
                 <div className={styles.inputItem}>
                   <span>Participant Group</span>
-                  <select
-                    value={this.state.basic['participant_group']}
-                    onChange={this.basicInfoChanged('participant_group')}
-                  >
-                    {this.state.participant_groups.map(group => (
-                      <option key={group.id} value={group.id}>
-                        {group.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className={styles.select}>
+                    <Select
+                      styles={selectStyles}
+                      value={this.state.selectedGroup}
+                      onChange={this.basicInfoChanged('participant_group')}
+                      options={this.state.groupList}
+                    />
+                  </div>
                 </div>
               </td>
               <td>
