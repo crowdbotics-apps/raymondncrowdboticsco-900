@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import { ButtonToolbar, Button } from 'react-bootstrap';
 import Checkbox from 'rc-checkbox';
 import { CSVLink, CSVDownload } from 'react-csv';
 import { AppContext } from 'components';
@@ -183,17 +182,20 @@ class ReportContainer extends React.Component {
 
         <div className={styles.buttonContainer}>
           {!loading && csvData && csvData.length !== 0 && (
-            <ButtonToolbar>
-              <Button variant='primary' size='md' className={styles.button}>
-                <CSVLink
-                  data={csvData}
-                  headers={headers}
-                  style={{ color: '#FFFFFF' }}
-                >
-                  Download data file
-                </CSVLink>
-              </Button>
-            </ButtonToolbar>
+            <div className={styles.button}>
+              <CSVLink
+                data={csvData}
+                headers={headers}
+                style={{
+                  color: '#ffffff',
+                  padding: 8,
+                  backgroundColor: '#03a9f4',
+                  borderRadius: 4
+                }}
+              >
+                Download data file
+              </CSVLink>
+            </div>
           )}
         </div>
       </div>
