@@ -27,7 +27,7 @@ export const getCampaigns = async () => {
           division: participantData.division,
           completion: campaignData.total_points,
           answers: campaignData.answers || 0,
-          checked: false
+          checked: true
         };
         campaigns.push(campaign);
       }

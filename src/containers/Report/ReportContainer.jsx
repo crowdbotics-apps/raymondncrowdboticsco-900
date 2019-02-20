@@ -3,17 +3,20 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import { ButtonToolbar, Button } from 'react-bootstrap';
 import Checkbox from 'rc-checkbox';
-import 'rc-checkbox/assets/index.css';
+import { CSVLink, CSVDownload } from 'react-csv';
 import { AppContext } from 'components';
 import { ReportController, ClientController } from 'controllers';
+
+import 'rc-checkbox/assets/index.css';
 import styles from './ReportContainer.module.scss';
 
 var _ = require('lodash');
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
+const headers = [
+  { label: 'Campaign', key: 'name' },
+  { label: 'Completions', key: 'completion' },
+  { label: 'Participants Group', key: 'group_name' },
+  { label: 'Division / Location ', key: 'division' }
 ];
 
 class ReportContainer extends React.Component {
@@ -25,7 +28,7 @@ class ReportContainer extends React.Component {
       'Campaign',
       'Completions',
       'Participants Group',
-      'Divisions / Locations'
+      'Division / Location '
     ];
 
     this.state = {
@@ -36,13 +39,17 @@ class ReportContainer extends React.Component {
 
   handleOrgChange = async orgSelected => {
     await this.setState({ orgSelected });
-    console.log('Option selected:', orgSelected);
-
     await this.getCampaigns();
-    let filterCampaings = _.map(this.state.campaigns, function(o) {
-      if (o.client_id === orgSelected.value) return o;
-    });
+    let filterCampaings = [];
+    (await this.state.campaigns) &&
+      this.state.campaigns.length !== 0 &&
+      this.state.campaigns.map(async campaign => {
+        if (campaign.client_id === orgSelected.value) {
+          filterCampaings.push(campaign);
+        }
+      });
     await this.setState({ campaigns: filterCampaings });
+    await this.makeCsvData();
   };
 
   async componentDidMount() {
@@ -68,6 +75,7 @@ class ReportContainer extends React.Component {
     await this.setState({ orgList });
 
     await this.getCampaigns();
+    await this.makeCsvData();
     this.context.hideLoading();
     this.setState({ loading: false });
   };
@@ -82,7 +90,6 @@ class ReportContainer extends React.Component {
   }
 
   async select(selectedData) {
-    console.log('select', selectedData.id);
     let { campaigns } = this.state;
 
     await campaigns.map(item => {
@@ -91,19 +98,34 @@ class ReportContainer extends React.Component {
       }
     });
 
-    this.setState({ campaigns });
+    await this.setState({ campaigns });
+
+    this.makeCsvData();
   }
 
-  downloadData() {
-    alert('download data');
-  }
+  async makeCsvData() {
+    let csvData = [];
 
-  downloadMedia() {
-    alert('download media');
+    this.state.campaigns &&
+      this.state.campaigns.length !== 0 &&
+      this.state.campaigns.map(campaign => {
+        if (campaign.checked) {
+          let data = {
+            name: campaign.name,
+            completion: `${campaign.answers} out of ${campaign.completion}`,
+            group_name: campaign.participant_group_name,
+            division: campaign.division
+          };
+          csvData.push(data);
+        }
+      });
+
+    this.setState({ csvData });
   }
 
   createRow() {
     const { campaigns } = this.state;
+
     let children = [];
     for (var i = 0; i < campaigns.length; i++) {
       let item = campaigns[i];
@@ -124,18 +146,12 @@ class ReportContainer extends React.Component {
         )
       );
     }
+
     return children;
   }
 
   render() {
-    const {
-      orgSelected,
-      bulkActionSelected,
-      filterSelected,
-      orgList,
-      campaigns,
-      loading
-    } = this.state;
+    const { orgSelected, orgList, campaigns, loading, csvData } = this.state;
 
     return (
       <div className={styles.wrapper}>
@@ -149,6 +165,7 @@ class ReportContainer extends React.Component {
             />
           </div>
         </div>
+
         {!loading && campaigns.length ? (
           <table>
             <thead>
@@ -163,17 +180,21 @@ class ReportContainer extends React.Component {
         ) : (
           <h3>No Result</h3>
         )}
+
         <div className={styles.buttonContainer}>
-          <ButtonToolbar>
-            <Button
-              variant='primary'
-              size='md'
-              className={styles.button}
-              onClick={() => this.downloadData()}
-            >
-              Download data file
-            </Button>
-          </ButtonToolbar>
+          {!loading && csvData && csvData.length !== 0 && (
+            <ButtonToolbar>
+              <Button variant='primary' size='md' className={styles.button}>
+                <CSVLink
+                  data={csvData}
+                  headers={headers}
+                  style={{ color: '#FFFFFF' }}
+                >
+                  Download data file
+                </CSVLink>
+              </Button>
+            </ButtonToolbar>
+          )}
         </div>
       </div>
     );
