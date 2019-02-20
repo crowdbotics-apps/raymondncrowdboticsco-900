@@ -34,11 +34,8 @@ export const addCampaign = async payload => {
           }
         })
     );
-    await Promise.all(tasks);
 
-    let campaignDoc = collection.doc();
-    await campaignDoc.set({
-      id: campaignDoc.id,
+    let data = {
       name: payload.basic.name,
       marketing_name: payload.basic.marketing_name,
       client_id: payload.basic.org,
@@ -47,7 +44,36 @@ export const addCampaign = async payload => {
       participant_group_id: payload.basic.participant_group,
       total_points: payload.basic.total_points,
       description: payload.basic.description,
-      status: 'active',
+      status: 'active'
+    };
+
+    if (payload.basic.logo) {
+      tasks.push(
+        new Promise((resolve, reject) => {
+          let ref = Storage.ref(`media/${moment().valueOf()}`);
+          let task = ref.put(payload.basic.logo);
+          task.on(
+            'state_changed',
+            snapshot => {},
+            error => {},
+            () => {
+              task.snapshot.ref.getDownloadURL().then(downloadUrl => {
+                data.logo = downloadUrl;
+                resolve(downloadUrl);
+              });
+            }
+          );
+        })
+      );
+    } else {
+      data.logo = null;
+    }
+    await Promise.all(tasks);
+
+    let campaignDoc = collection.doc();
+    await campaignDoc.set({
+      id: campaignDoc.id,
+      ...data,
       questions
     });
   } catch (error) {
@@ -90,10 +116,29 @@ export const updateCampaign = async payload => {
           }
         })
     );
-    await Promise.all(tasks);
+    if (payload.basic.logo && payload.basic.logo.type) {
+      tasks.push(
+        new Promise((resolve, reject) => {
+          let ref = Storage.ref(`media/${moment().valueOf()}`);
+          let task = ref.put(payload.basic.logo);
+          task.on(
+            'state_changed',
+            snapshot => {},
+            error => {},
+            () => {
+              task.snapshot.ref.getDownloadURL().then(downloadUrl => {
+                data.logo = downloadUrl;
+                resolve(downloadUrl);
+              });
+            }
+          );
+        })
+      );
+    } else {
+      data.logo = payload.basic.logo;
+    }
 
-    let campaignDoc = collection.doc(payload.campaignId);
-    campaignDoc.update({
+    let data = {
       name: payload.basic.name,
       marketing_name: payload.basic.marketing_name,
       client_id: payload.basic.org,
@@ -102,7 +147,14 @@ export const updateCampaign = async payload => {
       participant_group_id: payload.basic.participant_group,
       total_points: payload.basic.total_points,
       description: payload.basic.description,
-      status: payload.basic.status,
+      status: payload.basic.status
+    };
+
+    await Promise.all(tasks);
+
+    let campaignDoc = collection.doc(payload.campaignId);
+    campaignDoc.update({
+      ...data,
       questions
     });
   } catch (error) {

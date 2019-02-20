@@ -37,12 +37,14 @@ class CampaignEditContainer extends React.Component {
         location: '',
         total_points: 0,
         description: '',
-        status: 'active'
+        status: 'active',
+        logo: null
       },
       questions: [this.generateNewQuestion()]
     };
 
     this.fileInputs = {};
+    this.logoInput = {};
   }
 
   async componentDidMount() {
@@ -85,7 +87,8 @@ class CampaignEditContainer extends React.Component {
     basic.total_points = data.total_points;
     basic.description = data.description;
     basic.status = data.status;
-
+    basic.logo = data.logo;
+    
     // setting questions
     questions = data.questions.map(question => ({
       id: uuid(),
@@ -214,15 +217,17 @@ class CampaignEditContainer extends React.Component {
     }
   };
 
-  selectQuestonType = (qtype, index) => () => {
-    let { questions } = this.state;
-    questions[index].type = qtype;
-    if (qtype === QuestionType.OPEN_TEXT_QUESTION) {
-      questions[index].answers = [];
-    } else {
-      questions[index].answers = [''];
+  uploadLogoClicked = () => {
+    this.logoInput.click();
+  };
+
+  logoFileUploadChange = e => {
+    let files = e.target.files;
+    if (files.length > 0) {
+      let { basic } = this.state;
+      basic.logo = files[0];
+      this.setState({ basic });
     }
-    this.setState({ questions });
   };
 
   uploadClicked = id => () => {
@@ -236,6 +241,17 @@ class CampaignEditContainer extends React.Component {
       questions[index].media = files[0];
       this.setState({ questions });
     }
+  };
+
+  selectQuestonType = (qtype, index) => () => {
+    let { questions } = this.state;
+    questions[index].type = qtype;
+    if (qtype === QuestionType.OPEN_TEXT_QUESTION) {
+      questions[index].answers = [];
+    } else {
+      questions[index].answers = [''];
+    }
+    this.setState({ questions });
   };
 
   questionChanged = (key, index) => e => {
@@ -320,7 +336,7 @@ class CampaignEditContainer extends React.Component {
                 index
               )}
             />
-            Open text question
+            Open Text Question
           </div>
           <div
             className={styles.qtypeRadio}
@@ -332,7 +348,7 @@ class CampaignEditContainer extends React.Component {
               checked={question.type === QuestionType.ONE_CHOICE}
               onChange={this.selectQuestonType(QuestionType.ONE_CHOICE, index)}
             />
-            One Choice
+            One Choice Question
           </div>
           <div
             className={styles.qtypeRadio}
@@ -350,7 +366,7 @@ class CampaignEditContainer extends React.Component {
                 index
               )}
             />
-            Multiple Choice
+            Multiple Choice Question
           </div>
         </div>
         <div className={styles.inputItem}>
@@ -573,6 +589,38 @@ class CampaignEditContainer extends React.Component {
                   />
                 </div>
               </td>
+            </tr>
+            <tr>
+              <td>
+                <div className={styles.logoItem}>
+                  <span>Logo</span>
+                  <div className={styles.logoContainer}>
+                    <div
+                      className={styles.btnUpload}
+                      onClick={this.uploadLogoClicked}
+                    >
+                      Upload Logo
+                    </div>
+                    {this.state.basic.logo ? (
+                      this.state.basic.logo.type ? (
+                        <img src={URL.createObjectURL(this.state.basic.logo)} />
+                      ) : (
+                        <img src={this.state.basic.logo} />
+                      )
+                    ) : (
+                      <span>No logo is uploaded</span>
+                    )}
+                    <input
+                      ref={ref => (this.logoInput = ref)}
+                      type='file'
+                      className={styles.file}
+                      accept='image/*'
+                      onChange={this.logoFileUploadChange}
+                    />
+                  </div>
+                </div>
+              </td>
+              <td />
             </tr>
           </tbody>
         </table>
