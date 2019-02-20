@@ -43,28 +43,14 @@ class ParticipantListContainer extends React.Component {
   };
 
   searchInputChanged = e => {
-    let filterData = [];
-
     this.setState(
       {
         keyword: e.target.value
       },
       async () => {
-        if (!this.state.keyword || this.state.keyword === '') {
-          return this.reload();
-        } else {
+        if (!this.state.keyword) {
           await this.reload();
-          const { data } = this.state;
-          if (data && data.length > 0) {
-            await data.map(async item => {
-              if (item.name.toLowerCase().includes(this.state.keyword)) {
-                filterData.push(item);
-              }
-            });
-          }
         }
-
-        return this.setState({ data: filterData });
       }
     );
   };
