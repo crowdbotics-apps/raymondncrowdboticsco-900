@@ -14,6 +14,7 @@ var _ = require('lodash');
 const headers = [
   { label: 'Campaign', key: 'name' },
   { label: 'Completions', key: 'completion' },
+  { label: 'Company', key: 'company_name' },
   { label: 'Participants Group', key: 'group_name' },
   { label: 'Division / Location ', key: 'division' }
 ];
@@ -26,6 +27,7 @@ class ReportContainer extends React.Component {
       'Select',
       'Campaign',
       'Completions',
+      'Company',
       'Participants Group',
       'Division / Location '
     ];
@@ -112,6 +114,7 @@ class ReportContainer extends React.Component {
           let data = {
             name: campaign.name,
             completion: `${campaign.answers} out of ${campaign.completion}`,
+            company_name: campaign.company_name,
             group_name: campaign.participant_group_name,
             division: campaign.division
           };
@@ -139,6 +142,7 @@ class ReportContainer extends React.Component {
             </td>
             <td>{item.name}</td>
             <td>{`${item.answers} out of ${item.completion}`}</td>
+            <td>{item.company_name}</td>
             <td>{item.participant_group_name}</td>
             <td>{item.division}</td>
           </tr>
