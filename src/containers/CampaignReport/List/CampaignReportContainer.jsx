@@ -106,7 +106,7 @@ class CampaignReportContainer extends React.Component {
       <div className={styles.campaign}>
         <div className={styles.tab} onClick={() => this.showCampaign(campaign)}>
           <span>
-            {`${campaign.name} details tab`}
+            {campaign.name}
             <i
               className={!campaign.show ? 'fa fa-arrow-down' : 'fa fa-arrow-up'}
             />
