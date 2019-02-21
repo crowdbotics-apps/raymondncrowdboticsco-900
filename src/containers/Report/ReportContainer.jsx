@@ -150,7 +150,13 @@ class ReportContainer extends React.Component {
                 onChange={() => this.select(item)}
               />
             </td>
-            <td>{item.name}</td>
+            <td
+              onClick={() => {
+                this.goCampaignReport(item.id);
+              }}
+            >
+              <a href=''>{item.name}</a>
+            </td>
             <td>{`${item.answers} out of ${item.completion}`}</td>
             <td>{item.company_name}</td>
             <td>{item.participant_group_name}</td>
@@ -161,6 +167,10 @@ class ReportContainer extends React.Component {
     }
 
     return children;
+  }
+
+  goCampaignReport(id) {
+    this.props.history.push(`/campaign-report/${id}`);
   }
 
   render() {

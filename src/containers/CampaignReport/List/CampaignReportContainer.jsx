@@ -15,12 +15,14 @@ class CampaignReportContainer extends React.Component {
 
     this.state = {
       loading: true,
-      keyword: ''
+      keyword: '',
+      campaign_id: props.match.params.id
     };
   }
 
   async componentDidMount() {
     await this.reload();
+    this.state.campaign_id && this.showCampaignbyId();
   }
 
   reload = async () => {
@@ -75,6 +77,7 @@ class CampaignReportContainer extends React.Component {
         });
 
       let receptCampaign = {
+        id: campaign.id,
         name: campaign.campaign_name,
         headers: headers,
         rows: rows,
@@ -100,6 +103,21 @@ class CampaignReportContainer extends React.Component {
     });
 
     this.setState({ recepCampaigns });
+  }
+
+  async showCampaignbyId() {
+    let { recepCampaigns, campaign_id } = this.state;
+    let campaign = [];
+
+    await map(recepCampaigns, async data => {
+      if (data.id === campaign_id) {
+        data.show = true;
+        campaign.push(data);
+        this.setState({ keyword: data.name });
+      }
+    });
+
+    this.setState({ recepCampaigns: campaign });
   }
 
   searchInputChanged = e => {
