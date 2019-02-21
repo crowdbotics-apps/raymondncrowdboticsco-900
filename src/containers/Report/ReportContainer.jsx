@@ -14,7 +14,7 @@ var _ = require('lodash');
 const headers = [
   { label: 'Campaign', key: 'name' },
   { label: 'Completions', key: 'completion' },
-  { label: 'Company', key: 'company_name' },
+  { label: 'Organization', key: 'company_name' },
   { label: 'Participants Group', key: 'group_name' },
   { label: 'Division / Location ', key: 'division' }
 ];
@@ -27,7 +27,7 @@ class ReportContainer extends React.Component {
       'Select',
       'Campaign',
       'Completions',
-      'Company',
+      'Organization',
       'Participants Group',
       'Division / Location '
     ];
