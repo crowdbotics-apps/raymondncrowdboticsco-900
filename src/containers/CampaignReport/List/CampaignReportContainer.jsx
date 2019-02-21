@@ -44,37 +44,36 @@ class CampaignReportContainer extends React.Component {
     await map(campaigns, async campaign => {
       let headers = ['User name', 'Email'];
       let rows = [];
-      (await campaign.campaign_questions) &&
+      campaign.campaign_questions &&
         campaign.campaign_questions.length &&
-        map(campaign.campaign_questions, async question => {
+        (await map(campaign.campaign_questions, async question => {
           headers.push(question.question);
-        });
+        }));
 
-      (await campaign.campaign_user_list) &&
+      campaign.campaign_user_list &&
         campaign.campaign_user_list.length &&
-        map(campaign.campaign_user_list, async user => {
+        (await map(campaign.campaign_user_list, async user => {
           let row = [user.name, user.email];
 
-          (await campaign.campaign_questions) &&
+          campaign.campaign_questions &&
             campaign.campaign_questions.length &&
-            map(campaign.campaign_questions, async question => {
+            (await map(campaign.campaign_questions, async question => {
               let que_answer = '';
 
-              (await campaign.campaign_answers) &&
+              campaign.campaign_answers &&
                 campaign.campaign_answers.length &&
-                map(campaign.campaign_answers, async answer => {
+                (await map(campaign.campaign_answers, async answer => {
                   if (
                     answer.email === user.email &&
                     answer.question === question.question
                   ) {
                     que_answer = answer.answer;
                   }
-                });
+                }));
               row.push(que_answer);
-            });
-
+            }));
           rows.push(row);
-        });
+        }));
 
       let receptCampaign = {
         id: campaign.id,
