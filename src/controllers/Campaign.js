@@ -76,9 +76,15 @@ export const addCampaign = async payload => {
       ...data,
       questions
     });
+
+    await sendEmail(payload.basic.participant_group);
   } catch (error) {
     throw error;
   }
+};
+
+const sendEmail = async participant_group_id => {
+  let from = 'admin@lensengage.com';
 };
 
 export const updateCampaign = async payload => {
