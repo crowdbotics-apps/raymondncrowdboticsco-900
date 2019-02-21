@@ -14,12 +14,15 @@ class CampaignReportContainer extends React.Component {
     super(props);
 
     this.state = {
-      loading: true
+      loading: true,
+      keyword: '',
+      campaign_id: props.match.params.id
     };
   }
 
   async componentDidMount() {
     await this.reload();
+    this.state.campaign_id && this.showCampaignbyId();
   }
 
   reload = async () => {
@@ -74,6 +77,7 @@ class CampaignReportContainer extends React.Component {
         });
 
       let receptCampaign = {
+        id: campaign.id,
         name: campaign.campaign_name,
         headers: headers,
         rows: rows,
@@ -101,12 +105,62 @@ class CampaignReportContainer extends React.Component {
     this.setState({ recepCampaigns });
   }
 
+  async showCampaignbyId() {
+    let { recepCampaigns, campaign_id } = this.state;
+    let campaign = [];
+
+    await map(recepCampaigns, async data => {
+      if (data.id === campaign_id) {
+        data.show = true;
+        campaign.push(data);
+        this.setState({ keyword: data.name });
+      }
+    });
+
+    this.setState({ recepCampaigns: campaign });
+  }
+
+  searchInputChanged = e => {
+    this.setState(
+      {
+        keyword: e.target.value
+      },
+      async () => {
+        if (!this.state.keyword) {
+          await this.reload();
+        }
+      }
+    );
+  };
+
+  searchInputKeyPressed = async e => {
+    let filterData = [];
+
+    if (e.charCode === 13) {
+      if (!this.state.keyword) {
+        return this.reload();
+      } else {
+        await this.reload();
+        let { recepCampaigns } = this.state;
+        if (recepCampaigns && recepCampaigns.length > 0) {
+          await recepCampaigns.map(async item => {
+            if (item.name.toLowerCase().includes(this.state.keyword)) {
+              filterData.push(item);
+            }
+          });
+        }
+      }
+
+      return this.setState({ recepCampaigns: filterData });
+    }
+  };
+
   renderCampaign(campaign, index) {
     return (
       <div className={styles.campaign}>
         <div className={styles.tab} onClick={() => this.showCampaign(campaign)}>
           <span>
-            {`${campaign.name} details tab`}
+            {campaign.name}
             <i
               className={!campaign.show ? 'fa fa-arrow-down' : 'fa fa-arrow-up'}
             />
@@ -158,6 +212,18 @@ class CampaignReportContainer extends React.Component {
 
     return (
       <div className={styles.wrapper}>
+        <div className={styles.top}>
+          <div className={styles.searchbar}>
+            <i className={`fa fa-search ${styles.iconSearch}`} />
+            <input
+              type='text'
+              placeholder='Type campaign name here and press enter to get the result...'
+              value={this.state.keyword}
+              onChange={this.searchInputChanged}
+              onKeyPress={this.searchInputKeyPressed}
+            />
+          </div>
+        </div>
         {!loading &&
           recepCampaigns.length &&
           recepCampaigns.map((campaign, index) => {

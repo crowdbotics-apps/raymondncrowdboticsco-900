@@ -14,6 +14,7 @@ var _ = require('lodash');
 const headers = [
   { label: 'Campaign', key: 'name' },
   { label: 'Completions', key: 'completion' },
+  { label: 'Company', key: 'company_name' },
   { label: 'Participants Group', key: 'group_name' },
   { label: 'Division / Location ', key: 'division' }
 ];
@@ -26,12 +27,16 @@ class ReportContainer extends React.Component {
       'Select',
       'Campaign',
       'Completions',
+      'Company',
       'Participants Group',
       'Division / Location '
     ];
 
     this.state = {
-      orgSelected: null,
+      orgSelected: {
+        label: 'all',
+        value: 0
+      },
       loading: true
     };
   }
@@ -39,15 +44,17 @@ class ReportContainer extends React.Component {
   handleOrgChange = async orgSelected => {
     await this.setState({ orgSelected });
     await this.getCampaigns();
-    let filterCampaings = [];
-    (await this.state.campaigns) &&
-      this.state.campaigns.length !== 0 &&
-      this.state.campaigns.map(async campaign => {
-        if (campaign.client_id === orgSelected.value) {
-          filterCampaings.push(campaign);
-        }
-      });
-    await this.setState({ campaigns: filterCampaings });
+    if (orgSelected.value !== 0) {
+      let filterCampaings = [];
+      (await this.state.campaigns) &&
+        this.state.campaigns.length !== 0 &&
+        this.state.campaigns.map(async campaign => {
+          if (campaign.client_id === orgSelected.value) {
+            filterCampaings.push(campaign);
+          }
+        });
+      await this.setState({ campaigns: filterCampaings });
+    }
     await this.makeCsvData();
   };
 
@@ -59,7 +66,12 @@ class ReportContainer extends React.Component {
     await this.setState({ loading: true });
     this.context.showLoading();
     let orgs = await ClientController.getClients();
-    let orgList = [];
+    let orgList = [
+      {
+        label: 'all',
+        value: 0
+      }
+    ];
 
     if (orgs && orgs.length > 0) {
       await orgs.map(item => {
@@ -112,6 +124,7 @@ class ReportContainer extends React.Component {
           let data = {
             name: campaign.name,
             completion: `${campaign.answers} out of ${campaign.completion}`,
+            company_name: campaign.company_name,
             group_name: campaign.participant_group_name,
             division: campaign.division
           };
@@ -137,8 +150,15 @@ class ReportContainer extends React.Component {
                 onChange={() => this.select(item)}
               />
             </td>
-            <td>{item.name}</td>
+            <td
+              onClick={() => {
+                this.goCampaignReport(item.id);
+              }}
+            >
+              <a href=''>{item.name}</a>
+            </td>
             <td>{`${item.answers} out of ${item.completion}`}</td>
+            <td>{item.company_name}</td>
             <td>{item.participant_group_name}</td>
             <td>{item.division}</td>
           </tr>
@@ -147,6 +167,10 @@ class ReportContainer extends React.Component {
     }
 
     return children;
+  }
+
+  goCampaignReport(id) {
+    this.props.history.push(`/campaign-report/${id}`);
   }
 
   render() {

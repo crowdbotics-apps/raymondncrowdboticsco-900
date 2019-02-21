@@ -23,7 +23,6 @@
       align-items: center;
       justify-content: space-between;
       padding: 0px 20px;
-      margin-right: 20px;
 
       &:active {
         background-color: $white;
@@ -74,11 +73,11 @@
     }
   }
   .campaign {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
+    margin-top: 8px;
 
     .tab {
       width: 100%;
-      margin: 8px;
       background-color: #3740b3;
       color: #ffffff;
       height: 50px;
@@ -92,7 +91,7 @@
 
         i {
           position: absolute;
-          right: 30px;
+          right: 40px;
           margin-top: 20px;
         }
       }
@@ -101,7 +100,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      margin: 8px;
+      margin-top: 8px;
     }
 
     .header {
@@ -125,13 +124,9 @@
     }
   }
 
-  h3 {
-    margin: 8px;
-  }
-
   .buttonContainer {
-    margin: 8px;
     padding-top: 8px;
+    margin-top: 8px;
   }
 
   .select {

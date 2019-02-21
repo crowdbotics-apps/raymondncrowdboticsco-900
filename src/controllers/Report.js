@@ -18,15 +18,22 @@ export const getCampaigns = async () => {
 
         let participantData = await participant.data();
 
+        let client = await Firestore.collection('clients')
+          .doc(campaignData.client_id)
+          .get();
+
+        let clientData = await client.data();
+
         let campaign = {
           id: campaignData.id,
           client_id: campaignData.client_id,
+          company_name: clientData.org,
           name: campaignData.name,
           participant_group_id: campaignData.participant_group_id,
           participant_group_name: participantData.name,
           division: participantData.division,
           completion: campaignData.total_points,
-          answers: campaignData.answers || 0,
+          answers: (campaignData.answers && campaignData.answers.length) || 0,
           checked: true
         };
         campaigns.push(campaign);

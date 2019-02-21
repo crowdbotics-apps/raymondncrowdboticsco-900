@@ -30,12 +30,13 @@ class Router extends React.Component {
       selectedMenuItem = 0;
     } else if (window.location.pathname.startsWith('/campaigns')) {
       selectedMenuItem = 1;
-    } else if (window.location.pathname.startsWith('/campaign-report')) {
+    } else if (
+      window.location.pathname.startsWith('/report') ||
+      window.location.pathname.startsWith('/campaign-report')
+    ) {
       selectedMenuItem = 2;
-    } else if (window.location.pathname.startsWith('/report')) {
-      selectedMenuItem = 3;
     } else if (window.location.pathname.startsWith('/participants')) {
-      selectedMenuItem = 4;
+      selectedMenuItem = 3;
     } else {
       selectedMenuItem = 0; // default
     }
@@ -63,19 +64,10 @@ class Router extends React.Component {
               Campaigns
             </Link>
             <Link
-              to='/campaign-report'
-              className={cn(
-                styles.menuitem,
-                selectedMenuItem === 2 && styles['menuitem-selected']
-              )}
-            >
-              Campaign Report
-            </Link>
-            <Link
               to='/report'
               className={cn(
                 styles.menuitem,
-                selectedMenuItem === 3 && styles['menuitem-selected']
+                selectedMenuItem === 2 && styles['menuitem-selected']
               )}
             >
               Reporting
@@ -84,7 +76,7 @@ class Router extends React.Component {
               to='/participants'
               className={cn(
                 styles.menuitem,
-                selectedMenuItem === 4 && styles['menuitem-selected']
+                selectedMenuItem === 3 && styles['menuitem-selected']
               )}
             >
               Participants
@@ -103,7 +95,7 @@ class Router extends React.Component {
               <Route path='/campaigns' component={CampaignListContainer} />
               <Route path='/report' component={ReportContainer} />
               <Route
-                path='/campaign-report'
+                path='/campaign-report/:id'
                 component={CampaignReportContainer}
               />
               <Route
