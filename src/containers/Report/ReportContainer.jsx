@@ -33,7 +33,10 @@ class ReportContainer extends React.Component {
     ];
 
     this.state = {
-      orgSelected: null,
+      orgSelected: {
+        label: 'all',
+        value: 0
+      },
       loading: true
     };
   }
@@ -41,15 +44,17 @@ class ReportContainer extends React.Component {
   handleOrgChange = async orgSelected => {
     await this.setState({ orgSelected });
     await this.getCampaigns();
-    let filterCampaings = [];
-    (await this.state.campaigns) &&
-      this.state.campaigns.length !== 0 &&
-      this.state.campaigns.map(async campaign => {
-        if (campaign.client_id === orgSelected.value) {
-          filterCampaings.push(campaign);
-        }
-      });
-    await this.setState({ campaigns: filterCampaings });
+    if (orgSelected.value !== 0) {
+      let filterCampaings = [];
+      (await this.state.campaigns) &&
+        this.state.campaigns.length !== 0 &&
+        this.state.campaigns.map(async campaign => {
+          if (campaign.client_id === orgSelected.value) {
+            filterCampaings.push(campaign);
+          }
+        });
+      await this.setState({ campaigns: filterCampaings });
+    }
     await this.makeCsvData();
   };
 
@@ -61,7 +66,12 @@ class ReportContainer extends React.Component {
     await this.setState({ loading: true });
     this.context.showLoading();
     let orgs = await ClientController.getClients();
-    let orgList = [];
+    let orgList = [
+      {
+        label: 'all',
+        value: 0
+      }
+    ];
 
     if (orgs && orgs.length > 0) {
       await orgs.map(item => {
