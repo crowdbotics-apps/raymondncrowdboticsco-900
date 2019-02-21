@@ -14,7 +14,8 @@ class CampaignReportContainer extends React.Component {
     super(props);
 
     this.state = {
-      loading: true
+      loading: true,
+      keyword: ''
     };
   }
 
@@ -101,6 +102,41 @@ class CampaignReportContainer extends React.Component {
     this.setState({ recepCampaigns });
   }
 
+  searchInputChanged = e => {
+    this.setState(
+      {
+        keyword: e.target.value
+      },
+      async () => {
+        if (!this.state.keyword) {
+          await this.reload();
+        }
+      }
+    );
+  };
+
+  searchInputKeyPressed = async e => {
+    let filterData = [];
+
+    if (e.charCode === 13) {
+      if (!this.state.keyword) {
+        return this.reload();
+      } else {
+        await this.reload();
+        let { recepCampaigns } = this.state;
+        if (recepCampaigns && recepCampaigns.length > 0) {
+          await recepCampaigns.map(async item => {
+            if (item.name.toLowerCase().includes(this.state.keyword)) {
+              filterData.push(item);
+            }
+          });
+        }
+      }
+
+      return this.setState({ recepCampaigns: filterData });
+    }
+  };
+
   renderCampaign(campaign, index) {
     return (
       <div className={styles.campaign}>
@@ -158,6 +194,18 @@ class CampaignReportContainer extends React.Component {
 
     return (
       <div className={styles.wrapper}>
+        <div className={styles.top}>
+          <div className={styles.searchbar}>
+            <i className={`fa fa-search ${styles.iconSearch}`} />
+            <input
+              type='text'
+              placeholder='Type campaign name here and press enter to get the result...'
+              value={this.state.keyword}
+              onChange={this.searchInputChanged}
+              onKeyPress={this.searchInputKeyPressed}
+            />
+          </div>
+        </div>
         {!loading &&
           recepCampaigns.length &&
           recepCampaigns.map((campaign, index) => {
