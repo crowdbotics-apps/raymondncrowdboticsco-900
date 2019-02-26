@@ -192,7 +192,7 @@ class ClientAddContainer extends React.Component {
         ))}
         <div className={styles.btnGroup}>
           <div className={styles.btnSave} onClick={this.addClicked}>
-            Add
+            Save
           </div>
           <div className={styles.btnCancel} onClick={this.cancelClicked}>
             Cancel

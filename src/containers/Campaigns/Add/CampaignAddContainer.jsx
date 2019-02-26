@@ -352,6 +352,7 @@ class CampaignAddContainer extends React.Component {
                   {question.media.type.includes('image/') ? (
                     <img
                       className={styles.media}
+                      alt='media'
                       src={URL.createObjectURL(question.media)}
                     />
                   ) : (
@@ -544,7 +545,7 @@ class CampaignAddContainer extends React.Component {
                       Upload Logo
                     </div>
                     {this.state.basic.logo ? (
-                      <img src={URL.createObjectURL(this.state.basic.logo)} />
+                      <img src={URL.createObjectURL(this.state.basic.logo)} alt='logo'/>
                     ) : (
                       <span>No logo is uploaded</span>
                     )}

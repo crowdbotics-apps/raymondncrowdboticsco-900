@@ -88,7 +88,7 @@ class CampaignEditContainer extends React.Component {
     basic.description = data.description;
     basic.status = data.status;
     basic.logo = data.logo;
-    
+
     // setting questions
     questions = data.questions.map(question => ({
       id: uuid(),
@@ -393,6 +393,7 @@ class CampaignEditContainer extends React.Component {
                     {question.media.type.includes('image/') ? (
                       <img
                         className={styles.media}
+                        alt='media'
                         src={URL.createObjectURL(question.media)}
                       />
                     ) : (
@@ -407,7 +408,11 @@ class CampaignEditContainer extends React.Component {
                 ) : (
                   <div>
                     {question.media_type.includes('image/') ? (
-                      <img className={styles.media} src={question.media} />
+                      <img
+                        className={styles.media}
+                        alt='media'
+                        src={question.media}
+                      />
                     ) : (
                       <video
                         width='200'
@@ -603,9 +608,12 @@ class CampaignEditContainer extends React.Component {
                     </div>
                     {this.state.basic.logo ? (
                       this.state.basic.logo.type ? (
-                        <img src={URL.createObjectURL(this.state.basic.logo)} />
+                        <img
+                          src={URL.createObjectURL(this.state.basic.logo)}
+                          alt='logo'
+                        />
                       ) : (
-                        <img src={this.state.basic.logo} />
+                        <img src={this.state.basic.logo} alt='logo' />
                       )
                     ) : (
                       <span>No logo is uploaded</span>

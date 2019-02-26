@@ -46,6 +46,7 @@ class ClientListContainer extends React.Component {
           for (let participant of group.participant_list) {
             emailSet.add(participant.email);
           }
+          return;
         });
         item.participants = Array.from(emailSet);
         return item;

@@ -155,7 +155,7 @@ class ReportContainer extends React.Component {
                 this.goCampaignReport(item.id);
               }}
             >
-              <a href=''>{item.name}</a>
+              <span className={styles.campaign}>{item.name}</span>
             </td>
             <td>{`${item.answers} out of ${item.completion}`}</td>
             <td>{item.company_name}</td>
@@ -214,7 +214,8 @@ class ReportContainer extends React.Component {
                   color: '#ffffff',
                   padding: 8,
                   backgroundColor: '#03a9f4',
-                  borderRadius: 4
+                  borderRadius: 4,
+                  textDecoration: 'none'
                 }}
               >
                 Download data file

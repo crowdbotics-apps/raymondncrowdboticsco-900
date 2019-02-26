@@ -42,7 +42,7 @@ export const addCampaign = async payload => {
       from: payload.basic.from.toISOString(),
       to: payload.basic.to.toISOString(),
       participant_group_id: payload.basic.participant_group,
-      total_points: payload.basic.total_points,
+      total_points: parseInt(payload.basic.total_points),
       description: payload.basic.description,
       status: 'active'
     };
@@ -116,6 +116,19 @@ export const updateCampaign = async payload => {
           }
         })
     );
+
+    let data = {
+      name: payload.basic.name,
+      marketing_name: payload.basic.marketing_name,
+      client_id: payload.basic.org,
+      from: payload.basic.from.toISOString(),
+      to: payload.basic.to.toISOString(),
+      participant_group_id: payload.basic.participant_group,
+      total_points: parseInt(payload.basic.total_points),
+      description: payload.basic.description,
+      status: payload.basic.status
+    };
+
     if (payload.basic.logo && payload.basic.logo.type) {
       tasks.push(
         new Promise((resolve, reject) => {
@@ -137,18 +150,6 @@ export const updateCampaign = async payload => {
     } else {
       data.logo = payload.basic.logo;
     }
-
-    let data = {
-      name: payload.basic.name,
-      marketing_name: payload.basic.marketing_name,
-      client_id: payload.basic.org,
-      from: payload.basic.from.toISOString(),
-      to: payload.basic.to.toISOString(),
-      participant_group_id: payload.basic.participant_group,
-      total_points: payload.basic.total_points,
-      description: payload.basic.description,
-      status: payload.basic.status
-    };
 
     await Promise.all(tasks);
 
