@@ -14,9 +14,8 @@ class CampaignListContainer extends React.Component {
       'Name',
       'Organization',
       'Status',
-      'Progress',
       'Participants',
-      'Category',
+      'Division / Location',
       'Group',
       'Actions'
     ];
@@ -165,10 +164,9 @@ class CampaignListContainer extends React.Component {
                   <td>{item.name}</td>
                   <td>{item.client.org}</td>
                   <td>{item.status}</td>
-                  <td>progress</td>
-                  <td>Participant length</td>
-                  <td>category</td>
-                  <td>group</td>
+                  <td>{item.participant_group.participant_list.length}</td>
+                  <td>{item.participant_group.division}</td>
+                  <td>{item.participant_group.name}</td>
                   <td>
                     <span onClick={this.editClicked(item.id)}>
                       <i

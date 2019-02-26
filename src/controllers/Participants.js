@@ -1,6 +1,15 @@
 import { Firestore } from '../lib/firebase';
 const { map } = require('p-iteration');
 
+export const getParticipantById = async id =>
+  new Promise((resolve, reject) => {
+    let participantDoc = Firestore.collection('participant_groups').doc(id);
+    participantDoc.onSnapshot(async snapshot => {
+      let participantData = snapshot.data();
+      resolve(participantData);
+    });
+  });
+
 export const getParticipants = async () => {
   let clientsCollection = Firestore.collection('clients');
 

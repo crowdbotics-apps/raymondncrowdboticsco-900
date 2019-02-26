@@ -50,20 +50,32 @@ class CampaignAddContainer extends React.Component {
     let { basic } = this.state;
 
     let clients = await ClientController.getClients();
-    let participant_groups = await ClientController.getParticipantGroups();
-    basic.org = clients[0].id;
-    basic.contact = clients[0].contact;
-    basic.participant_group = participant_groups[0].id;
-    basic.location = participant_groups[0].division;
+    let participant_groups = [],
+      orgList = [],
+      groupList = [];
+    if (clients.length > 0) {
+      participant_groups = await ClientController.getParticipantGroupsByClientId(
+        clients[0].id
+      );
+      basic.org = clients[0].id;
+      basic.contact = clients[0].contact;
 
-    let orgList = clients.map(client => ({
-      value: client.id,
-      label: client.org
-    }));
-    let groupList = participant_groups.map(group => ({
-      value: group.id,
-      label: group.name
-    }));
+      orgList = clients.map(client => ({
+        value: client.id,
+        label: client.org
+      }));
+    }
+
+    if (participant_groups.length) {
+      basic.participant_group = participant_groups[0].id;
+      basic.location = participant_groups[0].division;
+
+      groupList = participant_groups.map(group => ({
+        value: group.id,
+        label: group.name
+      }));
+    }
+
     this.setState({
       clients,
       participant_groups,
@@ -145,10 +157,40 @@ class CampaignAddContainer extends React.Component {
     this.props.history.goBack();
   };
 
-  basicInfoChanged = key => e => {
+  basicInfoChanged = key => async e => {
     let { basic } = this.state;
 
-    if (key === 'participant_group') {
+    if (key === 'org') {
+      let selectedOrg = e;
+      basic[key] = e.value;
+      let index = this.state.clients.findIndex(client => client.id === e.value);
+      basic['contact'] = this.state.clients[index].contact;
+
+      let participant_groups = await ClientController.getParticipantGroupsByClientId(
+        e.value
+      );
+      let groupList = [];
+      if (participant_groups.length) {
+        basic.participant_group = participant_groups[0].id;
+        basic.location = participant_groups[0].division;
+
+        groupList = participant_groups.map(group => ({
+          value: group.id,
+          label: group.name
+        }));
+      } else {
+        basic.participant_group = '';
+        basic.location = '';
+      }
+
+      this.setState({
+        selectedOrg,
+        basic,
+        participant_groups,
+        groupList,
+        selectedGroup: groupList.length ? groupList[0] : {}
+      });
+    } else if (key === 'participant_group') {
       let selectedGroup = e;
       basic[key] = e.value;
       let index = this.state.participant_groups.findIndex(
@@ -157,15 +199,6 @@ class CampaignAddContainer extends React.Component {
       basic['location'] = this.state.participant_groups[index].division;
       this.setState({
         selectedGroup,
-        basic
-      });
-    } else if (key === 'org') {
-      let selectedOrg = e;
-      basic[key] = e.value;
-      let index = this.state.clients.findIndex(client => client.id === e.value);
-      basic['contact'] = this.state.clients[index].contact;
-      this.setState({
-        selectedOrg,
         basic
       });
     } else if (key === 'from' || key === 'to') {
@@ -545,7 +578,10 @@ class CampaignAddContainer extends React.Component {
                       Upload Logo
                     </div>
                     {this.state.basic.logo ? (
-                      <img src={URL.createObjectURL(this.state.basic.logo)} alt='logo'/>
+                      <img
+                        src={URL.createObjectURL(this.state.basic.logo)}
+                        alt='logo'
+                      />
                     ) : (
                       <span>No logo is uploaded</span>
                     )}

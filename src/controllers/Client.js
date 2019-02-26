@@ -1,5 +1,7 @@
 import { Firestore } from '../lib/firebase';
 
+import { getParticipantById } from './Participants';
+
 export const addClient = async payload => {
   try {
     let groupIds = [];
@@ -147,12 +149,13 @@ export const getClients = async () => {
   }
 };
 
-export const getParticipantGroups = async () => {
-  let groupCollection = Firestore.collection('participant_groups');
+export const getParticipantGroupsByClientId = async clientId => {
   try {
-    let snapshot = await groupCollection.get();
-    let tasks = snapshot.docs.map(groupDoc => groupDoc.data());
-    let participant_groups = Promise.all(tasks);
+    let client = await getClientById(clientId);
+    let tasks = client.participant_group_ids.map(groupId => {
+      return getParticipantById(groupId);
+    });
+    let participant_groups = await Promise.all(tasks);
     return participant_groups;
   } catch (error) {
     throw error;

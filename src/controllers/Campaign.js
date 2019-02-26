@@ -176,7 +176,14 @@ export const getCampaignById = async campaignId =>
         let client_data = client_snapshot.data();
         campaignData.client = client_data;
 
-        resolve(campaignData);
+        let participantDoc = Firestore.collection('participant_groups').doc(
+          campaignData.participant_group_id
+        );
+        participantDoc.onSnapshot(group_snapshot => {
+          let participant_group_data = group_snapshot.data();
+          campaignData.participant_group = participant_group_data;
+          resolve(campaignData);
+        });
       });
     });
   });
