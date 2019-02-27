@@ -141,6 +141,13 @@ class ReportContainer extends React.Component {
     let children = [];
     for (var i = 0; i < campaigns.length; i++) {
       let item = campaigns[i];
+      let count = 0;
+      campaigns[i].answers.map(answerData => {
+        if (answerData && answerData.complete) {
+          count++;
+        }
+      });
+
       children.push(
         _.isEmpty(item) ? null : (
           <tr key={item.id}>
@@ -157,9 +164,11 @@ class ReportContainer extends React.Component {
             >
               <span className={styles.campaign}>{item.name}</span>
             </td>
-            <td>{`${item.answers} out of ${item.completion}`}</td>
+            <td>{`${count} out of ${
+              item.participant_group.number_of_participants
+            }`}</td>
             <td>{item.company_name}</td>
-            <td>{item.participant_group_name}</td>
+            <td>{item.participant_group.name}</td>
             <td>{item.division}</td>
           </tr>
         )

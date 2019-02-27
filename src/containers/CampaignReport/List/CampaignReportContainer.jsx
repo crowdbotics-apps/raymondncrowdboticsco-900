@@ -40,6 +40,7 @@ class CampaignReportContainer extends React.Component {
 
     let recepCampaigns = [];
     let campaigns = await CampaignReportController.getCampaigns();
+    console.log(campaigns);
 
     await map(campaigns, async campaign => {
       let headers = ['User name', 'Email'];
@@ -50,31 +51,49 @@ class CampaignReportContainer extends React.Component {
           headers.push(question.question);
         });
 
-      (await campaign.campaign_user_list) &&
-        campaign.campaign_user_list.length &&
-        map(campaign.campaign_user_list, async user => {
-          let row = [user.name, user.email];
+      (await campaign.participant_group.participant_list) &&
+        campaign.participant_group.participant_list.length &&
+        map(
+          campaign.participant_group.participant_list,
+          async (user, userIndex) => {
+            let row = [user.name, user.email];
 
-          (await campaign.campaign_questions) &&
-            campaign.campaign_questions.length &&
-            map(campaign.campaign_questions, async question => {
-              let que_answer = '';
-
-              (await campaign.campaign_answers) &&
-                campaign.campaign_answers.length &&
-                map(campaign.campaign_answers, async answer => {
-                  if (
-                    answer.email === user.email &&
-                    answer.question === question.question
-                  ) {
-                    que_answer = answer.answer;
+            (await campaign.campaign_questions) &&
+              campaign.campaign_questions.length &&
+              map(campaign.campaign_questions, async (question, index) => {
+                let que_answer = '';
+                if (campaign.answers[userIndex]) {
+                  switch (question.type) {
+                  case 0:
+                    que_answer =
+                        campaign.answers[userIndex].answers[`${index}`];
+                    break;
+                  case 1:
+                    que_answer =
+                        question.answers[
+                          campaign.answers[userIndex].answers[`${index}`]
+                        ];
+                    break;
+                  case 2: {
+                    let answers = [];
+                    answers = campaign.answers[userIndex].answers[
+                      `${index}`
+                    ].map(answerindex => {
+                      return question.answers[answerindex];
+                    });
+                    que_answer = answers.join(', ');
+                    break;
                   }
-                });
-              row.push(que_answer);
-            });
+                  default:
+                    break;
+                  }
+                }
+                row.push(que_answer);
+              });
 
-          rows.push(row);
-        });
+            rows.push(row);
+          }
+        );
 
       let receptCampaign = {
         id: campaign.id,

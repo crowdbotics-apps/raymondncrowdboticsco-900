@@ -18,14 +18,42 @@ export const getCampaigns = async () => {
 
         let participantData = await participant.data();
 
+        let userDocs = await Firestore.collection('users').get();
+        let tasks = participantData.participant_list.map(
+          participant =>
+            new Promise((resolve, reject) => {
+              userDocs.forEach(snapshot => {
+                let user = snapshot.data();
+                if (user.email === participant.email) {
+                  resolve(user.id);
+                }
+              });
+              resolve(null);
+            })
+        );
+        let participantIds = await Promise.all(tasks);
+        tasks = participantIds.map(participantId => {
+          if (participantId) {
+            return Firestore.collection('answers')
+              .doc(`${campaignData.id}-${participantId}`)
+              .get();
+          } else {
+            return null;
+          }
+        });
+        let answersSnapshot = await Promise.all(tasks);
+        let answers = answersSnapshot.map(snapshot =>
+          snapshot ? snapshot.data() : null
+        );
+
         let campaign = {
           id: campaignData.id,
           client_id: campaignData.client_id,
-          campaign_questions: campaignData.questions,
           campaign_name: campaignData.name,
+          campaign_questions: campaignData.questions,
           participant_group_id: campaignData.participant_group_id,
-          campaign_user_list: participantData.participant_list,
-          campaign_answers: campaignData.answers || []
+          participant_group: participantData,
+          answers
         };
         campaigns.push(campaign);
       }

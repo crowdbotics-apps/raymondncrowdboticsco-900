@@ -24,16 +24,43 @@ export const getCampaigns = async () => {
 
         let clientData = await client.data();
 
+        let userDocs = await Firestore.collection('users').get();
+        let tasks = participantData.participant_list.map(
+          participant =>
+            new Promise((resolve, reject) => {
+              userDocs.forEach(snapshot => {
+                let user = snapshot.data();
+                if (user.email === participant.email) {
+                  resolve(user.id);
+                }
+              });
+              resolve(null);
+            })
+        );
+        let participantIds = await Promise.all(tasks);
+        tasks = participantIds.map(participantId => {
+          if (participantId) {
+            return Firestore.collection('answers')
+              .doc(`${campaignData.id}-${participantId}`)
+              .get();
+          } else {
+            return null;
+          }
+        });
+        let answersSnapshot = await Promise.all(tasks);
+        let answers = answersSnapshot.map(snapshot =>
+          snapshot ? snapshot.data() : null
+        );
+
         let campaign = {
           id: campaignData.id,
           client_id: campaignData.client_id,
           company_name: clientData.org,
           name: campaignData.name,
           participant_group_id: campaignData.participant_group_id,
-          participant_group_name: participantData.name,
+          participant_group: participantData,
           division: participantData.division,
-          completion: campaignData.total_points,
-          answers: (campaignData.answers && campaignData.answers.length) || 0,
+          answers,
           checked: true
         };
         campaigns.push(campaign);
