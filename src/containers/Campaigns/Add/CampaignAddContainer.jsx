@@ -300,6 +300,18 @@ class CampaignAddContainer extends React.Component {
     }
   };
 
+  removeLogo = () => {
+    let { basic } = this.state;
+    basic['logo'] = null;
+    this.setState({ basic });
+  };
+
+  removeQuestionMedia = index => () => {
+    let { questions } = this.state;
+    questions[index].media = null;
+    this.setState({ questions });
+  };
+
   renderQuestion = (question, index) => {
     return (
       <div key={`${index}`} className={styles.questionContainer}>
@@ -374,11 +386,20 @@ class CampaignAddContainer extends React.Component {
           <div className={styles.mediaContainer}>
             <span>Media</span>
             <div>
-              <div
-                className={styles.btnUpload}
-                onClick={this.uploadClicked(question.id)}
-              >
-                Upload Image/Video
+              <div className={styles.upload}>
+                <div
+                  className={styles.btnUpload}
+                  onClick={this.uploadClicked(question.id)}
+                >
+                  Upload Image/Video
+                </div>
+                {question.media ? (
+                  <span onClick={this.removeQuestionMedia(index)}>
+                    <i className='fa fa-minus-circle' />
+                  </span>
+                ) : (
+                  <span />
+                )}
               </div>
               {question.media ? (
                 <div>
@@ -571,11 +592,18 @@ class CampaignAddContainer extends React.Component {
                 <div className={styles.logoItem}>
                   <span>Logo</span>
                   <div className={styles.logoContainer}>
-                    <div
-                      className={styles.btnUpload}
-                      onClick={this.uploadLogoClicked}
-                    >
-                      Upload Logo
+                    <div className={styles.upload}>
+                      <div
+                        className={styles.btnUpload}
+                        onClick={this.uploadLogoClicked}
+                      >
+                        Upload Logo
+                      </div>
+                      {this.state.basic.logo && (
+                        <span onClick={this.removeLogo}>
+                          <i className='fa fa-minus-circle' />
+                        </span>
+                      )}
                     </div>
                     {this.state.basic.logo ? (
                       <img

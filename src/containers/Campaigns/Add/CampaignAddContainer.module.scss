@@ -110,29 +110,49 @@
       .file {
         display: none;
       }
-
-      .btnUpload {
+      .upload {
         flex: 1;
-        height: 40px;
-        border-radius: 1px;
-        font-size: 16px;
-        line-height: 40px;
-        font-weight: 600;
-        text-align: center;
-        color: $white;
-        background-color: $primary;
+        display: flex;
         align-items: center;
-        border: 1px solid $primary;
-        margin-bottom: 10px;
-        cursor: pointer;
+        justify-content: space-between;
 
-        .icon {
-          margin-right: 5px;
+        .btnUpload {
+          flex: 1;
+          height: 40px;
+          border-radius: 1px;
+          font-size: 16px;
+          line-height: 40px;
+          font-weight: 600;
+          text-align: center;
+          color: $white;
+          background-color: $primary;
+          align-items: center;
+          border: 1px solid $primary;
+          margin-bottom: 10px;
+          cursor: pointer;
+
+          .icon {
+            margin-right: 5px;
+          }
+
+          &:active {
+            background-color: $white;
+            color: $primary;
+          }
         }
+        span {
+          width: 30px;
+          height: 30px;
+          margin-bottom: 15px;
+          margin-left: 10px;
+          i {
+            font-size: 30px;
+            color: $danger;
 
-        &:active {
-          background-color: $white;
-          color: $primary;
+            &:active {
+              opacity: 0.5;
+            }
+          }
         }
       }
 
@@ -230,28 +250,50 @@
         .file {
           display: none;
         }
-
-        .btnUpload {
-          width: 250px;
+        .upload {
+          width: 290px;
           height: 40px;
-          border-radius: 1px;
-          font-size: 16px;
-          line-height: 40px;
-          font-weight: 600;
-          text-align: center;
-          color: $white;
-          background-color: $primary;
+          display: flex;
           align-items: center;
-          border: 1px solid $primary;
-          cursor: pointer;
+          justify-content: space-between;
 
-          .icon {
-            margin-right: 5px;
+          .btnUpload {
+            width: 250px;
+            height: 40px;
+            border-radius: 1px;
+            font-size: 16px;
+            line-height: 40px;
+            font-weight: 600;
+            text-align: center;
+            color: $white;
+            background-color: $primary;
+            align-items: center;
+            border: 1px solid $primary;
+            cursor: pointer;
+
+            .icon {
+              margin-right: 5px;
+            }
+
+            &:active {
+              background-color: $white;
+              color: $primary;
+            }
           }
 
-          &:active {
-            background-color: $white;
-            color: $primary;
+          span {
+            width: 30px;
+            margin-left: 10px;
+            margin-bottom: 10px;
+
+            i {
+              font-size: 30px;
+              color: $danger;
+
+              &:active {
+                opacity: 0.5;
+              }
+            }
           }
         }
 
