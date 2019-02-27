@@ -134,7 +134,7 @@ class ClientListContainer extends React.Component {
                 <tr key={item.id}>
                   <td>{`${index + 1}`}</td>
                   <td>{item.org}</td>
-                  <td>{item.status}</td>
+                  <td>{item.status ? 'Active' : 'Inactive'}</td>
                   <td>{item.participants.length}</td>
                   <td>{item.participant_group_ids.length}</td>
                   <td>{item.participant_group_ids.length}</td>
@@ -145,7 +145,7 @@ class ClientListContainer extends React.Component {
                         className={`fa fa-pencil-square-o ${styles.iconPencil}`}
                       />
                     </span>
-                    {item.status === 'active' ? (
+                    {item.status ? (
                       <span onClick={this.deactivateClicked(item.id)}>
                         <i className={`fa fa-trash-o ${styles.iconTrash}`} />
                       </span>

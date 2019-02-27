@@ -51,15 +51,15 @@ class CampaignEditContainer extends React.Component {
     this.context.showLoading();
 
     let clients = await ClientController.getClients();
-    let participant_groups = await ClientController.getParticipantGroups();
-    let orgList = clients.map(client => ({
-      value: client.id,
-      label: client.org
-    }));
-    let groupList = participant_groups.map(group => ({
-      value: group.id,
-      label: group.name
-    }));
+    let participant_groups = [],
+      orgList = [],
+      groupList = [];
+    if (clients.length > 0) {
+      orgList = clients.map(client => ({
+        value: client.id,
+        label: client.org
+      }));
+    }
 
     let { basic, questions } = this.state;
     let data = await CampaignController.getCampaignById(this.state.campaignId);
@@ -73,6 +73,15 @@ class CampaignEditContainer extends React.Component {
     }
     let selectedOrg = orgList[index];
 
+    participant_groups = await ClientController.getParticipantGroupsByClientId(
+      data.client_id
+    );
+    if (participant_groups.length) {
+      groupList = participant_groups.map(group => ({
+        value: group.id,
+        label: group.name
+      }));
+    }
     basic.from = new Date(data.from);
     basic.to = new Date(data.to);
     basic.participant_group = data.participant_group_id;
@@ -185,10 +194,40 @@ class CampaignEditContainer extends React.Component {
     this.props.history.goBack();
   };
 
-  basicInfoChanged = key => e => {
+  basicInfoChanged = key => async e => {
     let { basic } = this.state;
 
-    if (key === 'participant_group') {
+    if (key === 'org') {
+      let selectedOrg = e;
+      basic[key] = e.value;
+      let index = this.state.clients.findIndex(client => client.id === e.value);
+      basic['contact'] = this.state.clients[index].contact;
+
+      let participant_groups = await ClientController.getParticipantGroupsByClientId(
+        e.value
+      );
+      let groupList = [];
+      if (participant_groups.length) {
+        basic.participant_group = participant_groups[0].id;
+        basic.location = participant_groups[0].division;
+
+        groupList = participant_groups.map(group => ({
+          value: group.id,
+          label: group.name
+        }));
+      } else {
+        basic.participant_group = '';
+        basic.location = '';
+      }
+
+      this.setState({
+        selectedOrg,
+        basic,
+        participant_groups,
+        groupList,
+        selectedGroup: groupList.length ? groupList[0] : {}
+      });
+    } else if (key === 'participant_group') {
       let selectedGroup = e;
       basic[key] = e.value;
       let index = this.state.participant_groups.findIndex(
@@ -197,15 +236,6 @@ class CampaignEditContainer extends React.Component {
       basic['location'] = this.state.participant_groups[index].division;
       this.setState({
         selectedGroup,
-        basic
-      });
-    } else if (key === 'org') {
-      let selectedOrg = e;
-      basic[key] = e.value;
-      let index = this.state.clients.findIndex(client => client.id === e.value);
-      basic['contact'] = this.state.clients[index].contact;
-      this.setState({
-        selectedOrg,
         basic
       });
     } else if (key === 'from' || key === 'to') {

@@ -42,7 +42,7 @@ class Router extends React.Component {
     }
     return (
       <div className={styles.wrapper}>
-        <header>SocialLens Admin</header>
+        <header>Lens Engage</header>
         <div className={styles.container}>
           <div className={styles.sidebar}>
             <Link

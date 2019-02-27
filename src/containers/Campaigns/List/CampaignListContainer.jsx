@@ -163,7 +163,7 @@ class CampaignListContainer extends React.Component {
                   <td>{`${index + 1}`}</td>
                   <td>{item.name}</td>
                   <td>{item.client.org}</td>
-                  <td>{item.status}</td>
+                  <td>{item.status ? 'Active' : 'Inactive'}</td>
                   <td>{item.participant_group.participant_list.length}</td>
                   <td>{item.participant_group.division}</td>
                   <td>{item.participant_group.name}</td>
@@ -173,7 +173,7 @@ class CampaignListContainer extends React.Component {
                         className={`fa fa-pencil-square-o ${styles.iconPencil}`}
                       />
                     </span>
-                    {item.status === 'active' ? (
+                    {item.status ? (
                       <span onClick={this.deactivateClicked(item.id)}>
                         <i className={`fa fa-trash-o ${styles.iconTrash}`} />
                       </span>

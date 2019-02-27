@@ -157,7 +157,7 @@ class CampaignReportContainer extends React.Component {
 
   renderCampaign(campaign, index) {
     return (
-      <div className={styles.campaign}>
+      <div key={campaign.id} className={styles.campaign}>
         <div className={styles.tab} onClick={() => this.showCampaign(campaign)}>
           <span>
             {campaign.name}

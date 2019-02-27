@@ -30,7 +30,7 @@ export const addClient = async payload => {
       id: clientDoc.id,
       org: payload.basic.org,
       contact: payload.basic.contact,
-      status: 'active',
+      status: true,
       participant_group_ids: groupIds
     });
   } catch (error) {
@@ -53,7 +53,8 @@ export const updateClient = async payload => {
       let participant_list = group.participant_list.map(participant => {
         return {
           name: participant[0],
-          email: participant[1]
+          email: participant[1],
+          status: true
         };
       });
       groupIds.push(groupDoc.id);
@@ -94,7 +95,7 @@ export const deactivateClient = async clientId => {
   try {
     let clientCollection = Firestore.collection('clients');
     await clientCollection.doc(clientId).update({
-      status: 'inactive'
+      status: false
     });
   } catch (error) {
     throw error;
@@ -105,7 +106,7 @@ export const activateClient = async clientId => {
   try {
     let clientCollection = Firestore.collection('clients');
     await clientCollection.doc(clientId).update({
-      status: 'active'
+      status: true
     });
   } catch (error) {
     throw error;

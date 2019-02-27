@@ -44,7 +44,7 @@ export const addCampaign = async payload => {
       participant_group_id: payload.basic.participant_group,
       total_points: parseInt(payload.basic.total_points),
       description: payload.basic.description,
-      status: 'active'
+      status: true
     };
 
     if (payload.basic.logo) {
@@ -204,7 +204,7 @@ export const getCampaigns = async () => {
 export const deactivateCampaign = async campaignId => {
   try {
     await collection.doc(campaignId).update({
-      status: 'inactive'
+      status: false
     });
   } catch (error) {
     throw error;
@@ -214,7 +214,7 @@ export const deactivateCampaign = async campaignId => {
 export const activateCampaign = async campaignId => {
   try {
     await collection.doc(campaignId).update({
-      status: 'active'
+      status: true
     });
   } catch (error) {
     throw error;
