@@ -132,6 +132,13 @@ export const getClientById = clientId =>
           })
       );
       clientData.participant_groups = await Promise.all(tasks);
+      let query = Firestore.collection('campaigns').where(
+        'client_id',
+        '==',
+        clientId
+      );
+      let docSnapshots = await query.get();
+      clientData.campaign = docSnapshots.docs.length;
       resolve(clientData);
     });
   });

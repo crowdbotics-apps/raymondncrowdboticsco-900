@@ -138,7 +138,7 @@ class ClientListContainer extends React.Component {
                   <td>{item.participants.length}</td>
                   <td>{item.participant_group_ids.length}</td>
                   <td>{item.participant_group_ids.length}</td>
-                  <td>N/A</td>
+                  <td>{item.campaign}</td>
                   <td>
                     <span onClick={this.editClicked(item.id)}>
                       <i
