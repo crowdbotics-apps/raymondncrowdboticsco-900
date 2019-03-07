@@ -76,6 +76,23 @@ export const addCampaign = async payload => {
       ...data,
       questions
     });
+
+    // sending invitation emails
+    fetch(
+      'https://us-central1-social-lens-3a3d5.cloudfunctions.net/inviteParticipants',
+      {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: campaignDoc.id })
+      }
+    )
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        throw error;
+      });
   } catch (error) {
     throw error;
   }
