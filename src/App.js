@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Router from './router';
 import { AppContext, LoadingView } from './components';
+import { Auth } from './lib/firebase';
 
 import './App.scss';
 
@@ -22,19 +23,32 @@ class App extends Component {
     this.state = {
       loading: false,
       showLoading: this.showLoading,
-      hideLoading: this.hideLoading
+      hideLoading: this.hideLoading,
+      user: null
     };
   }
 
+  async componentDidMount() {
+    await Auth.signInWithEmailAndPassword('admin@lensengage.com', 'P123w@rd');
+
+    Auth.onAuthStateChanged(user => {
+      this.setState({ user });
+    });
+  }
+
   render() {
-    return (
-      <AppContext.Provider value={this.state}>
-        <div className='App'>
-          <Router />
-        </div>
-        <LoadingView />
-      </AppContext.Provider>
-    );
+    if (this.state.user) {
+      return (
+        <AppContext.Provider value={this.state}>
+          <div className='App'>
+            <Router />
+          </div>
+          <LoadingView />
+        </AppContext.Provider>
+      );
+    } else {
+      return <div className='App' />;
+    }
   }
 }
 
